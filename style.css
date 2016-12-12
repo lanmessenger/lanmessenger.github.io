@@ -1,0 +1,104 @@
+@import 'https://fonts.googleapis.com/css?family=Roboto:300,400,500';
+
+body {
+  font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+  -moz-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+}
+
+main {
+  margin: 0 auto;
+  max-width: 50em;
+}
+
+body {
+  line-height: 1.5;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+}
+
+main {
+  padding: 4em 1em;
+}
+
+body {
+  color: #566b78;
+}
+
+h2 {
+  margin-top: 1em;
+  padding-top: 1em;
+}
+
+h1,
+h2,
+strong {
+  color: #333;
+}
+
+a {
+  color: #e81c4f;
+}
+
+a:hover {
+  color: #fff;
+  background: #e81c4f;
+}
+
+header {
+  /* gradient */
+  background: #d17300; /* For browsers that do not support gradients */
+  background: -webkit-linear-gradient(left top, yellow, #d17300); /* For Safari 5.1 to 6.0 */
+  background: -o-linear-gradient(bottom right, yellow, #d17300); /* For Opera 11.1 to 12.0 */
+  background: -moz-linear-gradient(bottom right, yellow, #d17300); /* For Firefox 3.6 to 15 */
+  background: linear-gradient(to bottom right, yellow, #d17300); /* Standard syntax */
+  /* ~gradient */
+/*
+  background-color: #d17300;
+  background-image: url("header.jpg");
+  background-position: center top;
+  background-repeat: no-repeat;
+  background-size: cover;
+*/
+  line-height: 1.2;
+  padding: 2vw 2em;
+  text-align: center;
+}
+
+header img {
+  display: inline-block;
+  vertical-align: top;
+}
+
+header h1 {
+  color: white;
+  font-size: 2.5em;
+  font-weight: 700;
+}
+
+download ul {
+    list-style-image: url('images/download.png');
+}
+
+download li {
+  padding-bottom: 0.5em;
+}
+
+download size {
+  color: darkgray;
+  font-size: 0.8em;
+}
+
+screenshots a {
+  margin-right: 1em;
+  display: inline-block;
+}
+
+screenshots img {
+  margin: 2px;
+  border: 0;
+  padding: 0;
+}
