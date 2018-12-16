@@ -1,0 +1,10 @@
+<lmcmessage>
+ <head>
+  <type>version</type>
+ </head>
+ <body>
+  <winVersion>1.2.39</winVersion>
+  <linVersion>1.2.39</linVersion>
+  <macVersion>1.2.39</macVersion>
+ </body>
+</lmcmessage>
