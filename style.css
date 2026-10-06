@@ -2,7 +2,7 @@
 
 body {
   font-family: "Roboto", "Helvetica", "Arial", sans-serif;
-  -moz-font-smoothing: grayscale;
+  -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -49,20 +49,8 @@ a:hover {
 }
 
 header {
-  /* gradient */
-  background: #d17300; /* For browsers that do not support gradients */
-  background: -webkit-linear-gradient(left top, yellow, #d17300); /* For Safari 5.1 to 6.0 */
-  background: -o-linear-gradient(bottom right, yellow, #d17300); /* For Opera 11.1 to 12.0 */
-  background: -moz-linear-gradient(bottom right, yellow, #d17300); /* For Firefox 3.6 to 15 */
-  background: linear-gradient(to bottom right, yellow, #d17300); /* Standard syntax */
-  /* ~gradient */
-/*
-  background-color: #d17300;
-  background-image: url("header.jpg");
-  background-position: center top;
-  background-repeat: no-repeat;
-  background-size: cover;
-*/
+  background: #d17300; /* Fallback for browsers that do not support gradients */
+  background: linear-gradient(to bottom right, yellow, #d17300);
   line-height: 1.2;
   padding: 2vw 2em;
   text-align: center;
