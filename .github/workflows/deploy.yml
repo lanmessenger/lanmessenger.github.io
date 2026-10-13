@@ -1,0 +1,76 @@
+# Build the Astro site and deploy the static output to GitHub Pages.
+#
+# /docs pages read Markdown from the lmc repo (lmc/docs/), checked out
+# next to this repo and pointed at via SITE_DOCS_DIR (see src/lib/site.ts).
+# Release binaries metadata (stars, sizes, URLs) resolves at build time
+# from the public GitHub API — no secrets needed.
+name: Deploy site to Pages
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout site
+        uses: actions/checkout@v4
+
+      - name: Checkout lmc (docs source for /docs pages)
+        uses: actions/checkout@v4
+        with:
+          repository: lanmessenger/lanmessenger
+          path: lmc
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 12.11.2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build
+        run: pnpm build
+        env:
+          SITE_DOCS_DIR: lmc/docs
+
+      - name: Verify deployable output
+        run: |
+          test -f dist/index.html || { echo "missing dist/index.html" >&2; exit 1; }
+          test -f dist/version || { echo "missing dist/version (update-check URL)" >&2; exit 1; }
+          test -f dist/.nojekyll || { echo "missing dist/.nojekyll (_astro/ would 404)" >&2; exit 1; }
+          test -f dist/favicon.ico || { echo "missing dist/favicon.ico" >&2; exit 1; }
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist/
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
