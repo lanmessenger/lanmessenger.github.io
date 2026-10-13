@@ -1,0 +1,96 @@
+---
+import Icon from "./Icon.astro";
+import AppMockup from "./AppMockup.astro";
+import { SITE } from "../data/site";
+import type { HeroTargets } from "../data/downloads";
+
+export interface Props {
+  starsLabel: string;
+  version: string;
+  targets: HeroTargets;
+}
+const { starsLabel, version: V, targets } = Astro.props;
+---
+<section class="hero" aria-labelledby="hero-title">
+  <div class="wrap">
+    <div class="status-pill">
+      <span class="dot" aria-hidden="true"></span>
+      <span>Open Source &amp; LAN-first</span>
+      <span class="ver">v{V}</span>
+    </div>
+
+    <h1 id="hero-title">An open-source LAN messenger for <span class="accent">instant</span>, local-first team communication</h1>
+    <p class="lede">Free and open-source instant messaging application for Windows, Mac, and Linux. Works seamlessly through your local network without internet or servers — secure, private, and lightning fast.</p>
+
+    <div class="hero-cta">
+      <a
+        class="btn btn-primary"
+        id="hero-download-btn"
+        href={targets.windows.href}
+        data-targets={JSON.stringify(targets)}
+      >
+        <Icon name="download" />
+        <span id="hero-download-text">Download for Windows</span>
+        <span class="os-tag" id="hero-os-tag">v{V} .exe</span>
+      </a>
+      <a class="btn btn-secondary" href={SITE.repo} target="_blank" rel="noreferrer">
+        <Icon name="terminal" />
+        <span>View on GitHub</span>
+        <span class="star-tag">{starsLabel}</span>
+      </a>
+    </div>
+
+    <ul class="trust-badges">
+      <li><Icon name="shieldcheck" /><span>No Server Required</span></li>
+      <li><Icon name="lock" /><span>AES-256 &amp; RSA Encryption</span></li>
+      <li><Icon name="wifioff" /><span>Works 100% Offline</span></li>
+      <li><Icon name="monitor" /><span>Cross-Platform (Win / Mac / Linux)</span></li>
+    </ul>
+
+    <!-- <AppMockup /> -->
+  </div>
+</section>
+
+<script is:inline>
+/* Hero download button: pick the installer matching the visitor OS.
+   Ready-made per-OS targets (href + labels) come from a data-targets
+   attribute rendered at build time from the GitHub release API —
+   no filename construction here. No frameworks. */
+(function () {
+  "use strict";
+
+  function detect() {
+    var ua = (navigator.userAgent || "").toLowerCase();
+    var platform = (navigator.platform || "").toLowerCase();
+    if (ua.indexOf("mac") !== -1 || platform.indexOf("mac") !== -1) return "mac";
+    if (ua.indexOf("linux") !== -1 || platform.indexOf("linux") !== -1) return "linux";
+    return "windows";
+  }
+
+  function init() {
+    var btn = document.getElementById("hero-download-btn");
+    var label = document.getElementById("hero-download-text");
+    var tag = document.getElementById("hero-os-tag");
+    if (!btn || !label || !tag) return;
+    var raw = btn.getAttribute("data-targets");
+    if (!raw) return;
+    var set;
+    try {
+      set = JSON.parse(raw);
+    } catch (e) {
+      return;
+    }
+    var target = set[detect()] || set.windows;
+    if (!target || !target.href) return;
+    btn.setAttribute("href", target.href);
+    label.textContent = target.text;
+    tag.textContent = target.tag;
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
+})();
+</script>

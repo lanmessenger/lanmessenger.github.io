@@ -1,0 +1,36 @@
+---
+import Icon from "./Icon.astro";
+import { SITE } from "../data/site";
+
+// Anchors are root-absolute (/#…) so the nav also works from /docs pages.
+// `starsLabel` is e.g. "3.4k stars", fetched at build time (required).
+export interface Props {
+  starsLabel: string;
+}
+const { starsLabel } = Astro.props;
+---
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="/#top">
+      <img src="/images/logo.png" alt="LAN Messenger logo" width="32" height="32" />
+      <span>LAN Messenger</span>
+    </a>
+    <nav class="site-nav" aria-label="Primary">
+      <a href="/#features">Features</a>
+      <a href="/#screenshots">Screenshots</a>
+      <a href="/#support">Support</a>
+      <a href="/docs">Docs</a>
+    </nav>
+    <div class="header-actions">
+      <a class="github-badge" href={SITE.repo} target="_blank" rel="noreferrer">
+        <Icon name="code" size={18} />
+        <span>GitHub</span>
+        <span class="stars">{starsLabel}</span>
+      </a>
+      <a class="btn btn-primary" href="/#download" style="padding:0.5rem 1rem;font-size:13px;">
+        <Icon name="download" />
+        <span>Download</span>
+      </a>
+    </div>
+  </div>
+</header>

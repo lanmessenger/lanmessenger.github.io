@@ -1,0 +1,230 @@
+---
+// Self-contained: toolbar art lives here so the mockup has zero imports.
+// (stroke = currentColor, same convention as Icon.astro)
+const MOCKUP_ICONS: Record<string, string> = {
+  font: '<polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/>',
+  palette: '<circle cx="13.5" cy="6.5" r=".5"/><circle cx="17.5" cy="10.5" r=".5"/><circle cx="8.5" cy="7.5" r=".5"/><circle cx="6.5" cy="12.5" r=".5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.93 0 1.65-.75 1.65-1.69 0-.44-.18-.84-.44-1.13-.26-.29-.43-.68-.43-1.12A1.68 1.68 0 0 1 14.46 16h2.07A5.47 5.47 0 0 0 22 10.5C22 5.81 17.5 2 12 2z"/>',
+  smiley: '<circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/>',
+  folder: '<path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>',
+  save: '<path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/>',
+  history: '<path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/>',
+};
+const icon = (n: string) =>
+  `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${MOCKUP_ICONS[n]}</svg>`;
+---
+
+<!-- Main + conversation windows (static illustration of the real LAN Messenger UI) -->
+<div class="mockup" role="img" aria-label="Illustration of the LAN Messenger main window with contact list and a one-to-one conversation window">
+  <div class="appwins">
+    <div class="appwin appwin-main">
+      <div class="appwin-title">
+        <span class="lights" aria-hidden="true"><i></i><i></i><i></i></span>
+        <span>LAN Messenger</span>
+      </div>
+      <div class="appwin-menu" aria-hidden="true"><span>Messenger</span><span>Tools</span><span>Help</span></div>
+      <div class="me">
+        <span class="statusbtn" aria-hidden="true"><i></i></span>
+        <div class="me-id"><p>Alex Morgan</p><span class="mystatus">Available</span><span class="note">Type a note</span></div>
+        <span class="me-avatar" aria-hidden="true">AM</span>
+      </div>
+      <div class="maintools" aria-hidden="true">
+        <span>Conversation</span><span>Send File</span><i></i><span>Broadcast</span><i></i><span>Chat Room</span>
+      </div>
+      <div class="contact-group">General</div>
+      <ul class="contacts">
+        <li>
+          <i class="st st-online" aria-hidden="true"></i>
+          <div><p>Priya Nair</p><small>Working on the release notes</small></div>
+          <span class="c-avatar" aria-hidden="true">PN</span>
+        </li>
+        <li>
+          <i class="st st-online" aria-hidden="true"></i>
+          <div><p>Tomas Keller</p><small>Testing the new build</small></div>
+          <span class="c-avatar" aria-hidden="true">TK</span>
+        </li>
+        <li>
+          <i class="st st-busy" aria-hidden="true"></i>
+          <div><p>Sofia Reyes</p><small>In a meeting</small></div>
+          <span class="c-avatar" aria-hidden="true">SR</span>
+        </li>
+        <li class="away">
+          <i class="st st-away" aria-hidden="true"></i>
+          <div><p>Jonas Weber</p><small>Out for lunch</small></div>
+          <span class="c-avatar" aria-hidden="true">JW</span>
+        </li>
+      </ul>
+    </div>
+    <div class="appwin appwin-chat">
+      <div class="appwin-title">
+        <span class="lights" aria-hidden="true"><i></i><i></i><i></i></span>
+        <span>Priya Nair - Conversation</span>
+      </div>
+      <div class="chatlog">
+        <div class="logmsg">
+          <p><b>Priya Nair</b><time>10:38:12</time></p>
+          <p>Morning! The offline build is ready, no server round-trip needed.</p>
+        </div>
+        <div class="logmsg">
+          <p><b>Priya Nair</b><time>10:38:40</time></p>
+          <p>Sending you the release notes file now, straight over the LAN.</p>
+        </div>
+        <div class="logmsg self">
+          <p><time>10:42:01</time><b>You</b></p>
+          <p>Got it in seconds. Works exactly as it should.</p>
+        </div>
+      </div>
+      <div class="chatbar" aria-hidden="true">
+        <span set:html={icon("font")} />
+        <span set:html={icon("palette")} />
+        <span set:html={icon("smiley")} />
+        <span class="sep"></span>
+        <span set:html={icon("folder")} />
+        <span set:html={icon("save")} />
+        <span class="spacer"></span>
+        <span set:html={icon("history")} />
+      </div>
+      <div class="chatbox" aria-hidden="true">
+        <input type="text" value="Type a message... (Enter to send)" disabled tabindex="-1" />
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .mockup {
+    margin: 4rem auto 0;
+    max-width: 64rem;
+    text-align: left;
+  }
+  .appwins { display: grid; grid-template-columns: 1fr; gap: 1.5rem; align-items: start; }
+  .appwin {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-xl);
+    overflow: hidden;
+  }
+  .appwin-title {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.625rem 1rem;
+    background: var(--surface-container);
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .appwin-title .lights { display: flex; align-items: center; gap: 0.375rem; }
+  .appwin-title .lights i { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+  .appwin-title .lights i:nth-child(1) { background: var(--danger); }
+  .appwin-title .lights i:nth-child(2) { background: var(--faint); opacity: 0.4; }
+  .appwin-title .lights i:nth-child(3) { background: var(--emerald); }
+  .appwin-menu {
+    display: flex;
+    gap: 1rem;
+    padding: 0.375rem 1rem;
+    font-size: 12px;
+    color: var(--muted);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .me { display: flex; align-items: center; gap: 0.5rem; padding: 0.625rem 1rem; }
+  .statusbtn {
+    flex: none;
+    width: 1.25rem; height: 1.25rem;
+    border-radius: 50%;
+    background: var(--emerald);
+    border: 2px solid var(--surface-highest);
+  }
+  .me-id { flex: 1; min-width: 0; }
+  .me-id p { font-size: 14px; font-weight: 700; }
+  .me-id .mystatus { float: right; font-size: 12px; color: var(--emerald-dark); }
+  .me-id .note { display: block; font-size: 12px; color: var(--muted); }
+  .me-avatar {
+    flex: none;
+    width: 2rem; height: 2rem;
+    border-radius: 50%;
+    background: var(--surface-highest);
+    color: var(--primary-ink);
+    font-size: 13px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .maintools {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.375rem 1rem;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--muted);
+    white-space: nowrap;
+    overflow: hidden;
+  }
+  .maintools i { width: 1px; height: 1rem; background: var(--border); flex: none; }
+  .contact-group {
+    padding: 0.5rem 1rem 0.25rem;
+    font-size: 12px;
+    font-weight: 600;
+    background: var(--surface-low);
+  }
+  .contacts { list-style: none; margin: 0; padding: 0.25rem 0.5rem 0.75rem; display: grid; gap: 2px; }
+  .contacts li { display: flex; align-items: center; gap: 0.5rem; padding: 0.375rem 0.5rem; border-radius: var(--radius); }
+  .contacts li.away { opacity: 0.7; }
+  .contacts li > div { flex: 1; min-width: 0; }
+  .contacts p { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .contacts small { display: block; font-size: 11px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .st { flex: none; width: 10px; height: 10px; border-radius: 50%; }
+  .st-online { background: var(--emerald); }
+  .st-busy { background: var(--danger); }
+  .st-away { background: #d97706; }
+  .c-avatar {
+    flex: none;
+    width: 2rem; height: 2rem;
+    border-radius: 50%;
+    background: var(--surface-highest);
+    color: var(--primary-ink);
+    font-size: 12px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .chatlog { padding: 1rem; display: flex; flex-direction: column; gap: 0.75rem; }
+  .logmsg p:first-child { font-size: 12px; }
+  .logmsg b { font-weight: 700; }
+  .logmsg time { font-family: var(--font-mono); font-size: 11px; font-weight: 400; color: var(--muted); margin-left: 0.5rem; }
+  .logmsg.self time { margin-left: 0; margin-right: 0.5rem; }
+  .logmsg p + p { font-size: 13px; margin-top: 0.125rem; }
+  .chatbar {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.375rem 1rem;
+    border-top: 1px solid var(--border);
+    color: var(--muted);
+  }
+  .chatbar svg { width: 16px; height: 16px; }
+  .chatbar .sep { width: 1px; height: 1rem; background: var(--border); flex: none; }
+  .chatbar .spacer { flex: 1; }
+  .chatbox { padding: 0.625rem 1rem 1rem; }
+  .chatbox input {
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--card);
+    padding: 0.5rem 0.75rem;
+    font-size: 13px;
+    font-family: var(--font-ui);
+    color: var(--muted);
+  }
+  .chatbox input:focus { outline: none; }
+
+  @media (min-width: 1024px) {
+    .appwins { grid-template-columns: 5fr 7fr; }
+  }
+</style>

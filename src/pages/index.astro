@@ -1,0 +1,31 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Hero from "../components/Hero.astro";
+import Download from "../components/Download.astro";
+import Features from "../components/Features.astro";
+import Screenshots from "../components/Screenshots.astro";
+import Support from "../components/Support.astro";
+import { getRepoMeta, getReleaseInfo, formatStars } from "../lib/github";
+import { SITE } from "../data/site";
+import { buildReleaseView } from "../data/downloads";
+
+// Build-time data: stars + release assets resolve once during `astro build`.
+// No fallbacks — if the API is unreachable, the build fails.
+const [{ stars }, releaseInfo] = await Promise.all([
+  getRepoMeta(),
+  getReleaseInfo(`v${SITE.version}`),
+]);
+const starsLabel = `${formatStars(stars)} stars`;
+const release = buildReleaseView(releaseInfo);
+---
+<BaseLayout starsLabel={starsLabel}>
+  <Hero
+    starsLabel={starsLabel}
+    version={release.version}
+    targets={release.heroTargets}
+  />
+  <Download version={release.version} entries={release.downloads} />
+  <Features />
+  <Screenshots />
+  <Support />
+</BaseLayout>

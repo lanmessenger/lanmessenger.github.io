@@ -1,0 +1,77 @@
+---
+import Icon from "./Icon.astro";
+import { SITE } from "../data/site";
+import { ARCHIVE, type DownloadEntry } from "../data/downloads";
+
+export interface Props {
+  version: string;
+  entries: DownloadEntry[];
+}
+const { version: V, entries } = Astro.props;
+---
+<section class="section section-alt" id="download" aria-labelledby="download-title">
+  <div class="wrap">
+    <div class="section-head split">
+      <div>
+        <span class="kicker"><Icon name="shieldcheck" /><span>Production Release v{V}</span></span>
+        <h2 id="download-title">Download LAN Messenger v{V}</h2>
+        <p>Choose the installer for your local operating system. Official builds for Windows, macOS and Linux, published as GitHub release assets with SHA-256 checksums.</p>
+      </div>
+      <a class="btn btn-secondary" style="flex:none;" href={SITE.releaseTag} target="_blank" rel="noreferrer">
+        <Icon name="checkcircle" />
+        <span>Release Notes v{V}</span>
+      </a>
+    </div>
+
+    <div class="dl-grid">
+      {entries.map((dl) => (
+        <article class="dl-card">
+          <div>
+            <div class="dl-top">
+              <span class:list={["os-icon", dl.iconTone !== "default" && dl.iconTone]} aria-hidden="true">
+                <Icon name={dl.icon} />
+              </span>
+              <span class="tag-badge">{dl.badge}</span>
+            </div>
+            <h3>{dl.title}</h3>
+            <p class="os-sub">{dl.sub}</p>
+            <div class="pkg-box">
+              <div><span>{dl.pkgLabel}</span><code>{dl.pkgValue}</code></div>
+              <div><span>{dl.verLabel}</span><b>{dl.verValue}</b></div>
+            </div>
+          </div>
+          <a
+            class:list={["btn", dl.buttonStyle === "primary" ? "btn-primary" : "btn-secondary"]}
+            href={dl.href}
+            target={dl.external ? "_blank" : undefined}
+            rel={dl.external ? "noreferrer" : undefined}
+          >
+            <Icon name={dl.buttonIcon} />
+            <span>{dl.buttonLabel}</span>
+          </a>
+        </article>
+      ))}
+    </div>
+
+    <div class="archive">
+      <div class="archive-head">
+        <div>
+          <h3>Previous releases</h3>
+          <p>Looking for older production builds or 32-bit legacies? Archive assets remain preserved.</p>
+        </div>
+        <span class="archive-tag">Archive v1.2.x</span>
+      </div>
+      <div class="archive-grid">
+        {ARCHIVE.map((item) => (
+          <a class="archive-item" href={item.href}>
+            <span class="file">
+              <Icon name={item.icon} />
+              <span><code>{item.label}</code><small>{item.sub}</small></span>
+            </span>
+            <Icon name="download" />
+          </a>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>

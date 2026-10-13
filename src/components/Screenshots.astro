@@ -1,0 +1,30 @@
+---
+import { SCREENSHOTS } from "../data/screenshots";
+---
+<section class="section section-alt" id="screenshots" aria-labelledby="shots-title">
+  <div class="wrap">
+    <div class="section-head split">
+      <div>
+        <span class="kicker"><span>Visual Interface</span></span>
+        <h2 id="shots-title">Screenshots across environments</h2>
+        <p>Clean, native interfaces adapted for standard desktop themes across Windows, macOS Aqua, and Linux KDE/GNOME environments.</p>
+      </div>
+      <span class="tag-badge">Native Desktop Window Manager</span>
+    </div>
+    <div class="shots-grid">
+      {SCREENSHOTS.map((s) => (
+        <article class="shot-card">
+          <div class="shot-frame">
+            <a href={s.full} target="_blank" rel="noreferrer"><img src={s.thumb} alt={s.alt} loading="lazy" /></a>
+            <span class="shot-label">{s.label}</span>
+          </div>
+          <div class="shot-body">
+            <h4>{s.title}</h4>
+            <p>{s.text}</p>
+          </div>
+        </article>
+      ))}
+    </div>
+    <p class="shots-note">Full support for <code>Apple Silicon arm64</code> &amp; <code>Intel x86_64</code> · click a preview to open the full screenshot</p>
+  </div>
+</section>

@@ -1,0 +1,40 @@
+---
+import Icon from "./Icon.astro";
+import { SITE } from "../data/site";
+
+const V = SITE.version;
+---
+<section class="section" id="support" aria-labelledby="support-title">
+  <div class="wrap">
+    <div class="section-head center">
+      <span class="kicker"><span>Open Source Collaboration</span></span>
+      <h2 id="support-title">Need assistance or want to contribute?</h2>
+      <p>Use GitHub for bug reports and general discussion. The codebase is C++ / Qt under GPL-3.0 — pull requests are welcome.</p>
+    </div>
+    <div class="support-grid">
+      <div class="support-card">
+        <h3>Get help, shape the roadmap</h3>
+        <p>Found a bug on your subnet, or need help with deployment on RDS / Citrix? Open an issue — include your OS, app version, and network setup.</p>
+        <div class="support-cta">
+          <a class="btn btn-primary" href={SITE.issues} target="_blank" rel="noreferrer">
+            <Icon name="issue" />
+            <span>Report an Issue</span>
+          </a>
+          <a class="btn btn-secondary" href={SITE.repo} target="_blank" rel="noreferrer">
+            <Icon name="code" />
+            <span>Contribute Code</span>
+          </a>
+        </div>
+      </div>
+      <div class="support-card">
+        <h3>Specification</h3>
+        <ul class="spec-list">
+          <li><span>Encryption</span><b>AES-256 + RSA-2048</b></li>
+          <li><span>WAN Dependency</span><b>None (Zero WAN)</b></li>
+          <li><span>Terminal Services</span><b>RDS &amp; Citrix Ready</b></li>
+          <li><span>Current Version</span><code>v{V}</code></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
