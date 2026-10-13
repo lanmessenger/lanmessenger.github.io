@@ -9,6 +9,8 @@ name: Deploy site to Pages
 on:
   push:
     branches: [master]
+  pull_request:
+    branches: [master]
   workflow_dispatch:
 
 permissions:
@@ -65,6 +67,8 @@ jobs:
           path: dist/
 
   deploy:
+    # PR builds validate only; Pages deploy runs on master.
+    if: github.event_name != 'pull_request'
     needs: build
     runs-on: ubuntu-latest
     environment:
