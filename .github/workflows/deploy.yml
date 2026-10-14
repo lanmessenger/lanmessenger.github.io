@@ -39,6 +39,9 @@ jobs:
         uses: actions/setup-node@v5
         with:
           node-version: 22
+          # v5 enables automatic caching from the packageManager field by
+          # default, which needs pnpm before corepack provides it — off.
+          package-manager-cache: false
 
       # pnpm/action-setup is still node20-only, so pnpm comes from corepack
       # (version pinned explicitly; matches packageManager in package.json).
