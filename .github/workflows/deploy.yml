@@ -27,24 +27,25 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout site
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Checkout lmc (docs source for /docs pages)
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: lanmessenger/lanmessenger
           path: lmc
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 12.11.2
-
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: 22
-          cache: pnpm
+
+      # pnpm/action-setup is still node20-only, so pnpm comes from corepack
+      # (version pinned explicitly; matches packageManager in package.json).
+      - name: Setup pnpm via corepack
+        run: |
+          corepack enable
+          corepack prepare pnpm@12.11.2 --activate
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -92,4 +93,4 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
