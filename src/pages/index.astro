@@ -18,7 +18,7 @@ const [{ stars }, releaseInfo] = await Promise.all([
 const starsLabel = `${formatStars(stars)} stars`;
 const release = buildReleaseView(releaseInfo);
 ---
-<BaseLayout starsLabel={starsLabel}>
+<BaseLayout starsLabel={starsLabel} canonical="/">
   <Hero
     starsLabel={starsLabel}
     version={release.version}

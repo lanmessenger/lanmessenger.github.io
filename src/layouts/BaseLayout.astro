@@ -7,12 +7,18 @@ export interface Props {
   title?: string;
   description?: string;
   starsLabel: string;
+  // Site-relative canonical path ("/", "/docs", "/docs/build", …).
+  // Rendered as an absolute self-referencing canonical via Astro.site.
+  canonical?: string;
 }
 const {
   title = "LAN Messenger — Secure P2P Local Network Messaging",
   description = "LAN Messenger — free and open-source serverless instant messenger for Windows, Mac and Linux. Works over your local network without internet or servers.",
   starsLabel,
+  canonical,
 } = Astro.props;
+const canonicalUrl =
+  canonical && Astro.site ? new URL(canonical, Astro.site).href : null;
 ---
 <!DOCTYPE html>
 <html lang="en">
@@ -21,6 +27,7 @@ const {
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="description" content={description} />
   <title>{title}</title>
+  {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
   <link rel="icon" href="/favicon.ico" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
