@@ -17,8 +17,24 @@ const [{ stars }, releaseInfo] = await Promise.all([
 ]);
 const starsLabel = `${formatStars(stars)} stars`;
 const release = buildReleaseView(releaseInfo);
+// Minimal SoftwareApplication schema: identity + platforms + license + price.
+// Kept factual (no ratings, no invented screenshots).
+const softwareJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  name: "LAN Messenger",
+  applicationCategory: "CommunicationApplication",
+  operatingSystem: ["Windows", "macOS", "Linux"],
+  softwareVersion: release.version,
+  url: "https://lanmessenger.github.io/",
+  license: SITE.licenseUrl,
+  sameAs: [SITE.repo],
+  isAccessibleForFree: true,
+  offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+};
 ---
 <BaseLayout starsLabel={starsLabel} canonical="/">
+  <script type="application/ld+json" set:html={JSON.stringify(softwareJsonLd)} />
   <Hero
     starsLabel={starsLabel}
     version={release.version}
