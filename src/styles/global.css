@@ -383,9 +383,14 @@ main { padding-top: 4rem; flex: 1; }
   white-space: nowrap;
 }
 .dl-card h3 { font-size: 18px; font-weight: 600; }
-.dl-card .os-sub { font-size: 13px; color: var(--muted); margin-top: 0.25rem; }
+.dl-card .os-sub { font-size: 13px; color: var(--muted); margin-top: 0.25rem; margin-bottom: 1rem; }
+.dl-card > .dl-body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
 .pkg-box {
-  margin-top: 1rem;
+  margin-top: auto;
   background: var(--surface-low);
   border-radius: var(--radius);
   padding: 0.75rem;

@@ -26,7 +26,7 @@ const { version: V, entries } = Astro.props;
     <div class="dl-grid">
       {entries.map((dl) => (
         <article class="dl-card">
-          <div>
+          <div class="dl-body">
             <div class="dl-top">
               <span class:list={["os-icon", dl.iconTone !== "default" && dl.iconTone]} aria-hidden="true">
                 <Icon name={dl.icon} />
