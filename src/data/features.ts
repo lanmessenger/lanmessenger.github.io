@@ -30,7 +30,7 @@ export const FEATURES: FeatureEntry[] = [
     icon: "lock",
     green: true,
     title: "Private Network",
-    text: "No need to worry about your privacy. AES encryption with RSA offers industry-leading security.",
+    text: "No need to worry about your privacy. Message traffic is encrypted with AES-256 and RSA-2048.",
     tag: "AES-256 + RSA-2048",
     tagHot: true,
   },
@@ -85,9 +85,9 @@ export const FEATURES: FeatureEntry[] = [
   {
     icon: "lang",
     green: false,
-    title: "Supports Multiple Languages & Multi-platform",
-    text: "You can choose from the different languages that will be used as the medium for the user interface. Regardless of your operating system, whether you are on Mac, Windows, or Linux, you can use this messaging application.",
-    tag: "20 interface languages",
+    title: "Cross-Platform & Multilingual",
+    text: "Native apps for Windows, macOS and Linux, with the interface in 20 languages.",
+    tag: "3 OS · 20 languages",
     tagHot: false,
   },
 ];
