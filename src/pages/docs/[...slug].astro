@@ -1,0 +1,172 @@
+---
+import { getCollection, render } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import DocsSidebar from "../../components/DocsSidebar.astro";
+import { getRepoMeta, formatStars } from "../../lib/github";
+
+// Explicit sidebar order: overview first, then the generic guide, the
+// per-platform guides, and standalone references last.
+// index.md -> /docs (not /docs/index).
+const DOCS_ORDER = [
+  "index",
+  "build",
+  "build-prerequisites",
+  "build-linux",
+  "build-macos",
+  "build-windows",
+  "ini-file",
+] as const;
+
+const docsHref = (id: string) => (id === "index" ? "/docs" : `/docs/${id}`);
+
+export async function getStaticPaths() {
+  const docs = await getCollection("docs");
+  return docs.map((entry) => ({
+    // src/content/docs/index.md -> /docs (not /docs/index)
+    params: { slug: entry.id === "index" ? undefined : entry.id },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content, headings } = await render(entry);
+
+const docs = await getCollection("docs");
+const byId = new Map(docs.map((d) => [d.id, d]));
+const pages = DOCS_ORDER.filter((id) => byId.has(id)).map((id) => ({
+  href: docsHref(id),
+  title: byId.get(id)!.data.title,
+}));
+const currentHref = docsHref(entry.id);
+const sectionHeadings = headings
+  .filter((h) => h.depth === 2)
+  .map((h) => ({ slug: h.slug, text: h.text }));
+
+// Same as the landing: no fallback, the build fails if the API is unreachable.
+const { stars } = await getRepoMeta();
+const starsLabel = `${formatStars(stars)} stars`;
+---
+<BaseLayout
+  title={`${entry.data.title} — LAN Messenger Docs`}
+  description={entry.data.description}
+  starsLabel={starsLabel}
+  canonical={currentHref}
+  ogType="article"
+>
+  <section class="section">
+    <div class="wrap docs">
+      <div class="docs-layout">
+        <div class="docs-head">
+          <h1>{entry.data.title}</h1>
+          {entry.data.description && <p class="lede">{entry.data.description}</p>}
+        </div>
+        <aside class="docs-side">
+          <DocsSidebar pages={pages} currentHref={currentHref} headings={sectionHeadings} />
+        </aside>
+        <div class="docs-body">
+          <Content />
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  /* Docs-only additions; everything else reuses the landing tokens. */
+  .docs h1 {
+    font-size: 32px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+  .docs .lede {
+    margin-top: 0.5rem;
+  }
+  .docs-layout {
+    display: grid;
+    gap: 2rem;
+    grid-template-columns: 1fr;
+  }
+  .docs-body {
+    display: grid;
+    gap: 1rem;
+    align-content: start;
+    min-width: 0;
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--ink);
+  }
+  .docs-body :global(h2) {
+    font-size: 22px;
+    font-weight: 700;
+    margin-top: 1rem;
+  }
+  .docs-body :global(ul) {
+    padding-left: 1.25rem;
+    display: grid;
+    gap: 0.375rem;
+  }
+  /* Inline code only: :not(pre) > keeps fenced code blocks (pre > code)
+     untouched — the old dead rule would have painted them with inline
+     background/border/padding had it ever matched. */
+  .docs-body :global(:not(pre) > code) {
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+    background: var(--surface-low);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.1em 0.35em;
+  }
+  .docs-body :global(a) {
+    color: var(--primary);
+  }
+  /* NOTE: content selectors need :global() — <Content /> renders bare
+     <table>/<th>/<td> without this component's data-astro-cid, so plain
+     scoped selectors never match (same reason the old h2 scroll-margin
+     rule was dead). */
+  .docs-body :global(table) {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    border-collapse: collapse;
+    font-size: 14px;
+    line-height: 1.55;
+  }
+  .docs-body :global(th),
+  .docs-body :global(td) {
+    border: 1px solid var(--border);
+    padding: 0.5rem 0.75rem;
+    text-align: left;
+    vertical-align: top;
+  }
+  .docs-body :global(thead th) {
+    background: var(--surface-low);
+    font-weight: 700;
+  }
+  .docs-body :global(tbody tr:nth-child(even)) {
+    background: var(--card);
+  }
+  .docs-body :global(thead th:first-child),
+  .docs-body :global(tbody td:first-child) {
+    white-space: nowrap;
+  }
+
+  @media (min-width: 1024px) {
+    .docs-layout {
+      grid-template-columns: 15rem minmax(0, 46rem);
+    }
+    .docs-head {
+      grid-column: 2;
+      grid-row: 1;
+      min-width: 0;
+    }
+    .docs-body {
+      grid-column: 2;
+      grid-row: 2;
+    }
+    .docs-side {
+      grid-column: 1;
+      grid-row: 1 / span 2;
+      min-width: 0;
+    }
+  }
+</style>

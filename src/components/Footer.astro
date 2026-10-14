@@ -1,0 +1,59 @@
+---
+import { SITE } from "../data/site";
+
+// Footer Resources/legal stubs stay as-is for now — cleanup happens later,
+// once /docs has real content to link to.
+---
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a class="brand" href="/#top">
+          <img src="/images/logo.png" alt="LAN Messenger logo" width="32" height="32" />
+          <span>LAN Messenger</span>
+        </a>
+        <p>Free, open-source serverless messenger for local networks. No servers, no cloud, zero internet dependency.</p>
+        <div class="footer-badges">
+          <span class="seal">RSA-2048 / AES-256</span>
+          <span class="seal plain">GPL-3.0</span>
+        </div>
+      </div>
+      <nav class="footer-col" aria-label="Platforms">
+        <h4>Platforms</h4>
+        <ul>
+          <li><a href="/#download">Windows x64</a></li>
+          <li><a href="/#download">macOS Apple Silicon &amp; Intel</a></li>
+          <li><a href="/#download">Linux (.deb / .rpm)</a></li>
+          <!-- <li><a href="/#download">Portable Archive</a></li> -->
+        </ul>
+      </nav>
+      <!-- <nav class="footer-col" aria-label="Resources"> -->
+      <!--   <h4>Resources</h4> -->
+      <!--   <ul> -->
+      <!--     <li><a class="stub" href="#" title="Coming soon">User Manual</a></li> -->
+      <!--     <li><a class="stub" href="#" title="Coming soon">Network Configuration</a></li> -->
+      <!--     <li><a class="stub" href="#" title="Coming soon">Security Whitepaper</a></li> -->
+      <!--     <li><a class="stub" href="#" title="Coming soon">FAQ &amp; Troubleshooting</a></li> -->
+      <!--   </ul> -->
+      <!-- </nav> -->
+      <nav class="footer-col" aria-label="Open source">
+        <h4>Open Source</h4>
+        <ul>
+          <li><a href="/docs">Documentation</a></li>
+          <li><a href={SITE.repo} target="_blank" rel="noreferrer">GitHub Repository</a></li>
+          <li><a href={SITE.issues} target="_blank" rel="noreferrer">Issue Tracker</a></li>
+          <li><a href={SITE.releaseTag} target="_blank" rel="noreferrer">Release Notes</a></li>
+          <!-- <li><a href={SITE.repo} target="_blank" rel="noreferrer">Community Forums</a></li> -->
+        </ul>
+      </nav>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 LAN Messenger Project. Released under GPL-3.0.</span>
+      <nav aria-label="Legal">
+        <!-- <a class="stub" href="#" title="Coming soon">Privacy Statement</a> -->
+        <a href={SITE.licenseUrl} target="_blank" rel="noreferrer">License Terms</a>
+        <!-- <a class="stub" href="#" title="Coming soon">Security Reporting</a> -->
+      </nav>
+    </div>
+  </div>
+</footer>

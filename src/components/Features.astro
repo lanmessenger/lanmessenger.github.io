@@ -1,0 +1,27 @@
+---
+import Icon from "./Icon.astro";
+import { FEATURES } from "../data/features";
+---
+<section class="section" id="features" aria-labelledby="features-title">
+  <div class="wrap">
+    <div class="section-head center">
+      <span class="kicker"><span>Comprehensive Feature Suite</span></span>
+      <h2 id="features-title">The following are some of the features of LAN Messenger</h2>
+      <p>Built for local networks without internet or central servers: offices, classrooms, labs and other isolated environments.</p>
+    </div>
+    <div class="feat-grid">
+      {FEATURES.map((f) => (
+        <article class="feat-card">
+          <div>
+            <span class:list={["feat-icon", f.green && "green"]} aria-hidden="true">
+              <Icon name={f.icon} />
+            </span>
+            <h3>{f.title}</h3>
+            <p>{f.text}</p>
+          </div>
+          <span class:list={["feat-tag", f.tagHot && "hot"]}>{f.tag}</span>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>

@@ -1,0 +1,99 @@
+# Build the Astro site and deploy the static output to GitHub Pages.
+#
+# /docs pages read Markdown from the lmc repo (lmc/docs/), checked out
+# next to this repo and pointed at via SITE_DOCS_DIR (see src/lib/site.ts).
+# Release binaries metadata (stars, sizes, URLs) resolves at build time
+# from the public GitHub API — no secrets needed.
+name: Deploy site to Pages
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout site
+        uses: actions/checkout@v5
+
+      - name: Checkout lmc (docs source for /docs pages)
+        uses: actions/checkout@v5
+        with:
+          repository: lanmessenger/lanmessenger
+          path: lmc
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          # v5 enables automatic caching from the packageManager field by
+          # default, which needs pnpm before corepack provides it — off.
+          package-manager-cache: false
+
+      # pnpm/action-setup is still node20-only, so pnpm comes from corepack
+      # (version pinned explicitly; matches packageManager in package.json).
+      - name: Setup pnpm via corepack
+        run: |
+          corepack enable
+          corepack prepare pnpm@12.11.2 --activate
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build
+        run: pnpm build
+        env:
+          SITE_DOCS_DIR: lmc/docs
+
+      - name: Verify deployable output
+        run: |
+          test -f dist/index.html || { echo "missing dist/index.html" >&2; exit 1; }
+          test -f dist/version || { echo "missing dist/version (update-check URL)" >&2; exit 1; }
+          test -f dist/.nojekyll || { echo "missing dist/.nojekyll (_astro/ would 404)" >&2; exit 1; }
+          test -f dist/favicon.ico || { echo "missing dist/favicon.ico" >&2; exit 1; }
+          test -f dist/sitemap.xml || { echo "missing dist/sitemap.xml" >&2; exit 1; }
+          test -f dist/robots.txt || { echo "missing dist/robots.txt" >&2; exit 1; }
+          # 1 landing + 7 docs pages, each with a self-referencing canonical.
+          pages=$(find dist -name index.html | sort)
+          test "$(echo "$pages" | wc -l)" -eq 8 || { echo "expected 8 pages, got: $pages" >&2; exit 1; }
+          echo "$pages" | while read -r f; do
+            grep -q '<link rel="canonical" href="https://lanmessenger.github.io[^"]*"' "$f" \
+              || { echo "missing canonical in $f" >&2; exit 1; }
+          done
+          # No accidental indexation blocks.
+          if grep -rq 'noindex\|nofollow' dist --include='*.html'; then
+            echo "found noindex/nofollow in dist HTML" >&2; exit 1;
+          fi
+          # Sitemap lists exactly the 8 canonical URLs.
+          test "$(grep -c '<loc>' dist/sitemap.xml)" -eq 8 || { echo "sitemap URL count != 8" >&2; exit 1; }
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist/
+
+  deploy:
+    # PR builds validate only; Pages deploy runs on master.
+    if: github.event_name != 'pull_request'
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5
