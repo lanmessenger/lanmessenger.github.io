@@ -1,6 +1,8 @@
 ---
 import Icon from "./Icon.astro";
-import AppMockup from "./AppMockup.astro";
+import OsWindowFrame from "./OsWindowFrame.astro";
+import AppMainWindow from "./AppMainWindow.astro";
+import AppChatWindow from "./AppChatWindow.astro";
 import { SITE } from "../data/site";
 import type { HeroTargets } from "../data/downloads";
 
@@ -47,9 +49,32 @@ const { starsLabel, version: V, targets } = Astro.props;
       <li><Icon name="monitor" /><span>Cross-Platform (Win / Mac / Linux)</span></li>
     </ul>
 
-    <!-- <AppMockup /> -->
+    <div class="hero-mockups">
+      <OsWindowFrame title="LAN Messenger" width="265px">
+        <AppMainWindow />
+      </OsWindowFrame>
+      <div class="hero-chat">
+        <OsWindowFrame title="E2E Tester - Conversation" width="325px">
+          <AppChatWindow />
+        </OsWindowFrame>
+      </div>
+    </div>
   </div>
 </section>
+
+<style>
+  .hero-mockups {
+    margin-top: 3rem;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 8rem;
+  }
+  .hero-chat {
+    margin-top: 4rem;
+  }
+</style>
 
 <script is:inline>
 /* Hero download button: pick the installer matching the visitor OS.

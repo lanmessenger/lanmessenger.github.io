@@ -1,0 +1,180 @@
+---
+export interface Props {
+  senderName?: string;
+  senderTime?: string;
+  firstText?: string;
+  nextTexts?: string[];
+  senderAvatar?: string;
+}
+const U = "images/lmc-ui";
+const {
+  senderName = "E2E Tester",
+  senderTime = "(5:20 PM)",
+  firstText = "e2e-self-001",
+  nextTexts = ["e2e-self-001"],
+  senderAvatar = `${U}/avatar-10.png`,
+} = Astro.props;
+---
+
+<div class="cw" role="img" aria-label={`LAN Messenger chat with ${senderName}`}>
+  <div class="cw-log">
+    <div class="cw-msg">
+      <div class="cw-blue" aria-hidden="true"></div>
+      <div class="cw-row">
+        <img src={senderAvatar} alt="" width="32" height="32" />
+        <div class="cw-text">
+          <div class="cw-name">{senderName}</div>
+          <div class="cw-line"><span class="t">{senderTime} </span><span>{firstText}</span></div>
+        </div>
+      </div>
+    </div>
+    {nextTexts.map((t) => (
+      <div class="cw-next">
+        <div class="cw-line"><span class="t">{senderTime} </span><span>{t}</span></div>
+      </div>
+    ))}
+  </div>
+  <div class="cw-split" aria-hidden="true"><img src={`${U}/vgrip.png`} alt="" width="54" height="7" /></div>
+  <div class="cw-divt" aria-hidden="true"></div>
+  <div class="cw-tools" aria-hidden="true">
+    <img style="left:5px" src={`${U}/font.png`} alt="" width="16" height="16" />
+    <img style="left:28px" src={`${U}/fontcolor.png`} alt="" width="16" height="16" />
+    <i style="left:50px"></i>
+    <img style="left:57px" src={`${U}/smiley.png`} alt="" width="16" height="16" />
+    <i style="left:79px"></i>
+    <img style="left:86px" src={`${U}/file.png`} alt="" width="16" height="16" />
+    <img style="left:109px" src={`${U}/sendfolder.png`} alt="" width="16" height="16" />
+    <i style="left:131px"></i>
+    <img style="left:138px" src={`${U}/save.png`} alt="" width="16" height="16" />
+    <img style="left:280px" src={`${U}/transfer.png`} alt="" width="16" height="16" />
+    <img style="left:303px" src={`${U}/history.png`} alt="" width="16" height="16" />
+  </div>
+  <div class="cw-divb" aria-hidden="true"></div>
+  <div class="cw-input" aria-hidden="true"></div>
+</div>
+
+<style>
+  /* --- Pixel-perfect 325x360 clone, isolated from global.css --- */
+  .cw,
+  .cw *,
+  .cw *::before,
+  .cw *::after {
+    box-sizing: border-box;
+  }
+  .cw {
+    width: 325px;
+    height: 360px;
+    flex: none;
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    color: #000;
+    font-family: "Segoe UI", Tahoma, Verdana, sans-serif;
+    font-size: 12px;
+    line-height: 1;
+    text-align: left;
+    overflow: hidden;
+    user-select: none;
+  }
+  .cw img { display: block; }
+
+  /* Log: y0-290, 1px #7A7A7A border (top/right/bottom/left) */
+  .cw-log {
+    flex: none;
+    height: 291px;
+    border: 1px solid #7a7a7a;
+    background: #fff;
+  }
+  .cw-msg { margin: 0 4px; }
+  /* Classic theme blue bar: x7-317, y11-13 */
+  .cw-blue {
+    height: 3px;
+    background: #0000b0;
+    margin: 10px 2px 0;
+  }
+  .cw-row {
+    display: flex;
+    margin: 2px 2px 0;
+  }
+  .cw-row img {
+    flex: none;
+    width: 32px;
+    height: 32px;
+  }
+  .cw-text {
+    padding-left: 10px;
+    min-width: 0;
+  }
+  .cw-name {
+    font-weight: 700;
+    padding-top: 3px;
+  }
+  .cw-line {
+    margin-top: 6px;
+    white-space: nowrap;
+  }
+  .cw-line .t { color: #777; }
+  /* Follow-up messages from the same author: time+text line only, x17 */
+  .cw-next { margin: 12px 4px 0; }
+  .cw-next .cw-line {
+    margin-top: 0;
+    padding-left: 12px;
+  }
+
+  /* Splitter: log bottom y290, grip y291-297 (vgrip 54x7, x135) */
+  .cw-split {
+    flex: none;
+    height: 7px;
+    background: #f0f0f0;
+    position: relative;
+  }
+  .cw-split img {
+    position: absolute;
+    left: 135px;
+    top: 0;
+    width: 54px;
+    height: 7px;
+  }
+
+  /* Top divider: y298, h1 */
+  .cw-divt {
+    flex: none;
+    height: 1px;
+    background: #fff;
+  }
+
+  /* Toolbar: y299-322, h24, 16x16 icons (y303), 1x14 separators (y304) */
+  .cw-tools {
+    flex: none;
+    height: 24px;
+    background: #f0f0f0;
+    position: relative;
+  }
+  .cw-tools img {
+    position: absolute;
+    top: 4px;
+    width: 16px;
+    height: 16px;
+  }
+  .cw-tools i {
+    position: absolute;
+    top: 5px;
+    width: 1px;
+    height: 14px;
+    background: #d3d3d3;
+  }
+
+  /* Bottom divider: y323, h1 */
+  .cw-divb {
+    flex: none;
+    height: 1px;
+    background: #a0a0a0;
+  }
+
+  /* Input field: y324-359, h36 */
+  .cw-input {
+    flex: none;
+    height: 36px;
+    background: #fff;
+  }
+</style>

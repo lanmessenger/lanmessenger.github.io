@@ -1,0 +1,98 @@
+---
+export interface Props {
+  title?: string;
+  width?: string;
+}
+const { title = "LAN Messenger", width } = Astro.props;
+---
+
+<div class="osw">
+  <div class="osw-titlebar">
+    <span class="osw-title">{title}</span>
+    <span class="osw-btns" aria-hidden="true"><i class="osw-min"></i><i class="osw-max"></i><i class="osw-close"></i></span>
+  </div>
+  <div class="osw-client" style={width ? `width:${width}` : undefined}><slot /></div>
+</div>
+
+<style>
+  .osw,
+  .osw *,
+  .osw *::before,
+  .osw *::after {
+    box-sizing: border-box;
+  }
+  .osw {
+    display: inline-block;
+    vertical-align: top;
+    background: #fff;
+    border: 1px solid #707070;
+    box-shadow: 0 8px 32px rgb(0 0 0 / 0.35);
+    font-family: "Segoe UI", Tahoma, Verdana, sans-serif;
+    user-select: none;
+  }
+  /* Titlebar: schematic, h30 */
+  .osw-titlebar {
+    height: 30px;
+    display: flex;
+    align-items: stretch;
+    background: #fff;
+    color: #000;
+  }
+  .osw-title {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    padding: 0 8px;
+    font-size: 12px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .osw-btns {
+    flex: none;
+    display: flex;
+    align-items: stretch;
+  }
+  .osw-btns i {
+    width: 46px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+  /* Minimize: dash */
+  .osw-min::before {
+    content: "";
+    width: 10px;
+    height: 1px;
+    background: #000;
+  }
+  /* Maximize: square */
+  .osw-max::before {
+    content: "";
+    width: 9px;
+    height: 9px;
+    border: 1px solid #000;
+  }
+  /* Close: cross */
+  .osw-close::before,
+  .osw-close::after {
+    content: "";
+    position: absolute;
+    width: 11px;
+    height: 1px;
+    background: #000;
+  }
+  .osw-close::before { transform: rotate(45deg); }
+  .osw-close::after { transform: rotate(-45deg); }
+  .osw-close:hover { background: #e81123; }
+  .osw-close:hover::before,
+  .osw-close:hover::after { background: #fff; }
+  /* Client area: sized by content (or the width prop);
+     overflowing content is clipped so the frame border stays visible */
+  .osw-client {
+    display: block;
+    overflow: hidden;
+  }
+</style>
