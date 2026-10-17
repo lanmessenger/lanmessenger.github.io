@@ -1,12 +1,15 @@
-// Single source of truth for pinned metadata: version (selects the GitHub
-// release tag), repo links. Binary file names, sizes and URLs come from the
-// GitHub release API at build time (see src/lib/github.ts).
+// Pinned release version: single source of truth — bump only the VERSION
+// line below for a new release. The GitHub release tag and all download
+// URLs derive from it (tag `v<version>`, assets via the release API at
+// build time, see src/lib/github.ts); repo links are static.
+const VERSION = "1.3.5" as const;
+const TAG = `v${VERSION}`;
+
 export const SITE = {
-  version: "1.3.3",
+  version: VERSION,
   repo: "https://github.com/lanmessenger/lanmessenger",
   issues: "https://github.com/lanmessenger/lanmessenger/issues",
-  releaseTag:
-    "https://github.com/lanmessenger/lanmessenger/releases/tag/v1.3.3",
+  releaseTag: `https://github.com/lanmessenger/lanmessenger/releases/tag/${TAG}`,
   licenseUrl:
     "https://github.com/lanmessenger/lanmessenger/blob/master/LICENSE",
 } as const;
