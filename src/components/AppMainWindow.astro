@@ -5,23 +5,21 @@ export interface Group {
   contacts: Contact[];
 }
 export interface Props {
-  userName?: string;
-  userStatus?: string;
-  note?: string;
-  myAvatar?: string;
-  myStatusIcon?: string;
-  groups?: Group[];
+  userName: string;
+  userStatus: string;
+  note: string;
+  myAvatar: string;
+  myStatusIcon: string;
+  groups: Group[];
 }
 const U = "images/lmc-ui";
 const {
-  userName = "E2E Tester",
-  userStatus = "Available",
-  note = "Type a note",
-  myAvatar = `${U}/avatar-cat.png`,
-  myStatusIcon = `${U}/online.png`,
-  groups = [
-    { name: "General", contacts: [{ name: "E2E Tester" }, { name: "E2E Tester" }] },
-  ],
+  userName,
+  userStatus,
+  note,
+  myAvatar,
+  myStatusIcon,
+  groups,
 } = Astro.props;
 ---
 

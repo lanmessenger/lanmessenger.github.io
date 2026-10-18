@@ -2,7 +2,7 @@
 import OsWindowFrame from "./OsWindowFrame.astro";
 import AppMainWindow from "./AppMainWindow.astro";
 import AppChatWindow from "./AppChatWindow.astro";
-import { AUTHORS, DIALOG, START_AT } from "../data/mockup-dialog";
+import { AUTHORS, DIALOG, DIALOG_TIME, START_AT } from "../data/mockup-dialog";
 import { CONTACTS } from "../data/mockup-contacts";
 ---
 
@@ -10,6 +10,10 @@ import { CONTACTS } from "../data/mockup-contacts";
   <OsWindowFrame title="LAN Messenger" width="265px">
     <AppMainWindow
       userName="Alice"
+      userStatus="Available"
+      note="Type a note"
+      myAvatar="images/lmc-ui/avatar-cat.png"
+      myStatusIcon="images/lmc-ui/online.png"
       groups={[
         {
           name: "General",
@@ -23,7 +27,14 @@ import { CONTACTS } from "../data/mockup-contacts";
     data-start-at={START_AT}
     data-authors={JSON.stringify(AUTHORS)}>
     <OsWindowFrame title="Bob - Conversation" width="325px">
-      <AppChatWindow dialog={DIALOG.slice(0, START_AT)} />
+      <AppChatWindow
+        senderName={AUTHORS.bob.name}
+        senderTime={DIALOG_TIME}
+        senderAvatar={AUTHORS.bob.avatar}
+        aliceName={AUTHORS.alice.name}
+        aliceAvatar={AUTHORS.alice.avatar}
+        dialog={DIALOG.slice(0, START_AT)}
+      />
     </OsWindowFrame>
   </div>
 </div>

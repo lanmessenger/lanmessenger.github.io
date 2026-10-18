@@ -1,19 +1,19 @@
 ---
-import { AUTHORS, type DialogLine } from "../data/mockup-dialog";
-export interface Props {  senderName?: string;
-  senderTime?: string;
-  senderAvatar?: string;
-  aliceName?: string;
-  aliceAvatar?: string;
-  dialog?: DialogLine[];
+import { type DialogLine } from "../data/mockup-dialog";
+export interface Props {  senderName: string;
+  senderTime: string;
+  senderAvatar: string;
+  aliceName: string;
+  aliceAvatar: string;
+  dialog: DialogLine[];
 }
 const {
-  senderName = AUTHORS.bob.name,
-  senderTime = "(5:20 PM)",
-  senderAvatar = AUTHORS.bob.avatar,
-  aliceName = AUTHORS.alice.name,
-  aliceAvatar = AUTHORS.alice.avatar,
-  dialog = [],
+  senderName,
+  senderTime,
+  senderAvatar,
+  aliceName,
+  aliceAvatar,
+  dialog,
 } = Astro.props;
 const U = "images/lmc-ui";const authorOf = (from: "alice" | "bob") =>
   from === "alice" ? { name: aliceName, avatar: aliceAvatar } : { name: senderName, avatar: senderAvatar };
