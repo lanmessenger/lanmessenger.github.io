@@ -1,0 +1,83 @@
+---
+import OsWindowFrame from "./OsWindowFrame.astro";
+import AppMainWindow from "./AppMainWindow.astro";
+import AppChatWindow from "./AppChatWindow.astro";
+import { AUTHORS, DIALOG, START_AT } from "../data/mockup-dialog";
+---
+
+<div class="hero-mockups">
+  <OsWindowFrame title="LAN Messenger" width="265px">
+    <AppMainWindow
+      userName="Alice"
+      groups={[
+        {
+          name: "General",
+          contacts: [
+            { name: "Bob", avatar: "images/lmc-ui/avatar-10.png" },
+            { name: "James Smith", avatar: "images/lmc-ui/avatar-8.png" },
+            { name: "Maria Garcia", avatar: "images/lmc-ui/avatar-1.png" },
+            { name: "Robert Johnson", avatar: "images/lmc-ui/avatar-2.png" },
+            { name: "Linda Brown", avatar: "images/lmc-ui/avatar-6.png" },
+            { name: "Michael Davis", statusIcon: "images/lmc-ui/away.png", avatar: "images/lmc-ui/avatar-3.png" },
+            { name: "Sarah Miller", statusIcon: "images/lmc-ui/busy.png", avatar: "images/lmc-ui/avatar-7.png" },
+            { name: "David Wilson", statusIcon: "images/lmc-ui/offline.png", avatar: "images/lmc-ui/avatar-9.png" },
+          ],
+        },
+      ]}
+    />
+  </OsWindowFrame>
+  <div class="hero-chat" id="hero-chat-demo"
+    data-dialog={JSON.stringify(DIALOG)}
+    data-start-at={START_AT}
+    data-authors={JSON.stringify(AUTHORS)}>
+    <OsWindowFrame title="Bob - Conversation" width="325px">
+      <AppChatWindow dialog={DIALOG.slice(0, START_AT)} />
+    </OsWindowFrame>
+  </div>
+</div>
+
+<style>
+  /* Mockup row: top margin from trust badges, gap between windows */
+  .hero-mockups {
+    margin-top: 3rem;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 8rem;
+  }
+  /* Chat window sits slightly lower than the main one */
+  .hero-chat {
+    margin-top: 4rem;
+  }
+  /* Narrow screens: windows stack vertically, tighten the spacing */
+  @media (max-width: 767px) {
+    .hero-mockups { gap: 2rem; }
+    .hero-chat { margin-top: 0; }
+  }
+</style>
+
+<script>
+/* Chat demo loader: the animation is decorative, so the player loads
+   only when the browser is idle — page load never waits for it.
+   With prefers-reduced-motion the chunk is not fetched at all. */
+(function () {
+  var root = document.getElementById("hero-chat-demo");
+  if (!root) return;
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  function boot() {
+    import("../scripts/mockup-demo.ts").then(function (m) {
+      m.playDemo(
+        JSON.parse(root.dataset.dialog || "[]"),
+        Number(root.dataset.startAt || "1"),
+        JSON.parse(root.dataset.authors || "{}"),
+      );
+    });
+  }
+  if ("requestIdleCallback" in window) {
+    (window as Window & { requestIdleCallback: (cb: () => void) => void }).requestIdleCallback(boot);
+  } else {
+    setTimeout(boot, 1);
+  }
+})();
+</script>

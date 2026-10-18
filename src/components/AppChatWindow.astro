@@ -1,38 +1,45 @@
 ---
-export interface Props {
-  senderName?: string;
+import { AUTHORS, type DialogLine } from "../data/mockup-dialog";
+export interface Props {  senderName?: string;
   senderTime?: string;
-  firstText?: string;
-  nextTexts?: string[];
   senderAvatar?: string;
+  aliceName?: string;
+  aliceAvatar?: string;
+  dialog?: DialogLine[];
 }
-const U = "images/lmc-ui";
 const {
-  senderName = "E2E Tester",
+  senderName = AUTHORS.bob.name,
   senderTime = "(5:20 PM)",
-  firstText = "e2e-self-001",
-  nextTexts = ["e2e-self-001"],
-  senderAvatar = `${U}/avatar-10.png`,
+  senderAvatar = AUTHORS.bob.avatar,
+  aliceName = AUTHORS.alice.name,
+  aliceAvatar = AUTHORS.alice.avatar,
+  dialog = [],
 } = Astro.props;
+const U = "images/lmc-ui";const authorOf = (from: "alice" | "bob") =>
+  from === "alice" ? { name: aliceName, avatar: aliceAvatar } : { name: senderName, avatar: senderAvatar };
 ---
 
 <div class="cw" role="img" aria-label={`LAN Messenger chat with ${senderName}`}>
   <div class="cw-log">
-    <div class="cw-msg">
-      <div class="cw-blue" aria-hidden="true"></div>
-      <div class="cw-row">
-        <img src={senderAvatar} alt="" width="32" height="32" />
-        <div class="cw-text">
-          <div class="cw-name">{senderName}</div>
-          <div class="cw-line"><span class="t">{senderTime} </span><span>{firstText}</span></div>
+    {dialog.map((line, i) => {
+      const author = authorOf(line.from);
+      return i === 0 || dialog[i - 1].from !== line.from ? (
+        <div class="cw-msg" data-author={line.from}>
+          <div class="cw-blue" aria-hidden="true"></div>
+          <div class="cw-row">
+            <img src={author.avatar} alt="" width="32" height="32" />
+            <div class="cw-text">
+              <div class="cw-name">{author.name}</div>
+              <div class="cw-line"><span class="t">{senderTime} </span><span>{line.text}</span></div>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
-    {nextTexts.map((t) => (
-      <div class="cw-next">
-        <div class="cw-line"><span class="t">{senderTime} </span><span>{t}</span></div>
-      </div>
-    ))}
+      ) : (
+        <div class="cw-next" data-author={line.from}>
+          <div class="cw-line"><span class="t">{senderTime} </span><span>{line.text}</span></div>
+        </div>
+      );
+    })}
   </div>
   <div class="cw-split" aria-hidden="true"><img src={`${U}/vgrip.png`} alt="" width="54" height="7" /></div>
   <div class="cw-divt" aria-hidden="true"></div>
@@ -50,7 +57,7 @@ const {
     <img style="left:303px" src={`${U}/history.png`} alt="" width="16" height="16" />
   </div>
   <div class="cw-divb" aria-hidden="true"></div>
-  <div class="cw-input" aria-hidden="true"></div>
+  <div class="cw-input" aria-hidden="true"><span class="cw-typed"></span></div>
 </div>
 
 <style>
@@ -84,7 +91,15 @@ const {
     height: 291px;
     border: 1px solid #7a7a7a;
     background: #fff;
+    overflow-y: auto;
+    transition: opacity 0.3s;
   }
+  /* Demo act switch: script fades the log out before clearing it */
+  .cw-log.is-switching { opacity: 0; }
+  /* Demo nodes fade-slide in on append */
+  .cw-msg.demo-in,
+  .cw-next.demo-in { animation: cw-in 0.25s ease-out; }
+  @keyframes cw-in { from { opacity: 0; transform: translateY(4px); } }
   .cw-msg { margin: 0 4px; }
   /* Classic theme blue bar: x7-317, y11-13 */
   .cw-blue {
@@ -177,4 +192,22 @@ const {
     height: 36px;
     background: #fff;
   }
+  /* Demo typing target: empty span is zero-size, layout unchanged */
+  .cw-typed {
+    display: block;
+    padding: 4px 6px;
+    white-space: nowrap;
+  }
+  /* Blinking caret while the demo types */
+  .cw-typed.is-typing::after {
+    content: "";
+    display: inline-block;
+    width: 1px;
+    height: 12px;
+    margin-left: 1px;
+    vertical-align: -2px;
+    background: #000;
+    animation: cw-blink 1s steps(1) infinite;
+  }
+  @keyframes cw-blink { 50% { opacity: 0; } }
 </style>

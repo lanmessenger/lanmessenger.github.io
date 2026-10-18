@@ -136,11 +136,14 @@ const {
   }
   .m-namerow b { font-size: 13px; font-weight: 700; white-space: nowrap; }
   .m-mystatus { margin-left: auto; font-size: 12px; white-space: nowrap; }
+  /* Note field, unfocused (real client: lmcLineEdit focusOutEvent sets
+     Base=Window, no focus frame). Transparent bg/border keep the 17px
+     geometry; gray text is the "Type a note" placeholder. */
   .m-note {
     margin-top: 1px;
     height: 17px;
-    background: #fff;
-    border: 1px solid #0078d7;
+    background: transparent;
+    border: 1px solid transparent;
     display: flex;
     align-items: center;
     padding: 0 4px;
@@ -212,19 +215,22 @@ const {
   }
 
   /* User row: h36 */
+  /* User row: h36. Real client (usertreewidget delegate, padding=2):
+     status icon, avatar and name pinned to top (+2px); note pinned
+     to bottom (-2px). Name is AlignTop even without a note. */
   .m-user {
     height: 36px;
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     background: #fff;
   }
-  .m-user img.m-ustatus { width: 16px; height: 16px; margin-left: 8px; }
-  .m-user span { margin-left: 4px; font-size: 12px; white-space: nowrap; }
+  .m-user img.m-ustatus { width: 16px; height: 16px; margin: 2px 0 0 8px; }
+  /* Name pinned to top like the status icon (delegate: AlignTop, padding=2) */
+  .m-user span { margin: 2px 0 0 4px; font-size: 12px; white-space: nowrap; }
   .m-user img.m-uavatar {
     width: 32px;
     height: 32px;
-    margin-left: auto;
-    margin-right: 6px;
+    margin: 2px 6px 0 auto;
   }
   .mw > .m-empty { flex: 1 0 auto; background: #fff; }
 </style>
