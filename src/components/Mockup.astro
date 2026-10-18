@@ -3,6 +3,7 @@ import OsWindowFrame from "./OsWindowFrame.astro";
 import AppMainWindow from "./AppMainWindow.astro";
 import AppChatWindow from "./AppChatWindow.astro";
 import { AUTHORS, DIALOG, START_AT } from "../data/mockup-dialog";
+import { CONTACTS } from "../data/mockup-contacts";
 ---
 
 <div class="hero-mockups">
@@ -12,16 +13,7 @@ import { AUTHORS, DIALOG, START_AT } from "../data/mockup-dialog";
       groups={[
         {
           name: "General",
-          contacts: [
-            { name: "Bob", avatar: "images/lmc-ui/avatar-10.png" },
-            { name: "James Smith", avatar: "images/lmc-ui/avatar-8.png" },
-            { name: "Maria Garcia", avatar: "images/lmc-ui/avatar-1.png" },
-            { name: "Robert Johnson", avatar: "images/lmc-ui/avatar-2.png" },
-            { name: "Linda Brown", avatar: "images/lmc-ui/avatar-6.png" },
-            { name: "Michael Davis", statusIcon: "images/lmc-ui/away.png", avatar: "images/lmc-ui/avatar-3.png" },
-            { name: "Sarah Miller", statusIcon: "images/lmc-ui/busy.png", avatar: "images/lmc-ui/avatar-7.png" },
-            { name: "David Wilson", statusIcon: "images/lmc-ui/offline.png", avatar: "images/lmc-ui/avatar-9.png" },
-          ],
+          contacts: CONTACTS,
         },
       ]}
     />
