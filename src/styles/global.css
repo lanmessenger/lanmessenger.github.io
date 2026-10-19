@@ -28,6 +28,9 @@
   --terminal: #1e293b;
   --terminal-ink: #e2e8f0;
   --danger: #ba1a1a;
+  --warn-ink: #b45309;
+  --warn-bg: #fef3c7;
+  --warn-bg-hover: #fde68a;
   --radius: 8px;
   --radius-lg: 16px;
   --radius-xl: 24px;

@@ -31,7 +31,15 @@ const { version: V, entries } = Astro.props;
               <span class:list={["os-icon", dl.iconTone !== "default" && dl.iconTone]} aria-hidden="true">
                 <Icon name={dl.icon} />
               </span>
-              <span class="tag-badge">{dl.badge}</span>
+              <span class="dl-badges">
+                <span class="tag-badge">{dl.badge}</span>
+                {dl.noteHref && dl.noteLabel && (
+                  <a class="warn-pill" href={dl.noteHref}>
+                    <span>{dl.noteLabel}</span>
+                    <Icon name="arrowright" size={14} />
+                  </a>
+                )}
+              </span>
             </div>
             <h3>{dl.title}</h3>
             <p class="os-sub">{dl.sub}</p>
@@ -75,3 +83,30 @@ const { version: V, entries } = Astro.props;
     </div>
   </div>
 </section>
+
+<style>
+  .dl-badges {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 3px;
+  }
+  .warn-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 1.25;
+    white-space: nowrap;
+    color: var(--warn-ink);
+    background: var(--warn-bg);
+    border-radius: 4px;
+    padding: 2px 0.5rem;
+    text-decoration: none;
+  }
+  .warn-pill:hover {
+    background: var(--warn-bg-hover);
+  }
+</style>

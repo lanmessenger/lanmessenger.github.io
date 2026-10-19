@@ -22,6 +22,9 @@ export interface DownloadEntry {
   buttonStyle: "primary" | "secondary";
   buttonIcon: "download" | "gear";
   buttonLabel: string;
+  /** Optional helper link under the card (e.g. macOS first-launch note). */
+  noteHref?: string;
+  noteLabel?: string;
 }
 
 interface SlotDef {
@@ -36,6 +39,9 @@ interface SlotDef {
   pkgLabel: string;
   pkgValue: string;
   buttonKind: string; // "Download <buttonKind> (<size>)"
+  /** Optional helper link under the card (e.g. macOS first-launch note). */
+  noteHref?: string;
+  noteLabel?: string;
 }
 
 const SLOTS: SlotDef[] = [
@@ -62,6 +68,8 @@ const SLOTS: SlotDef[] = [
     pkgLabel: "Package:",
     pkgValue: "Mac .dmg (arm64)",
     buttonKind: ".dmg arm64",
+    noteHref: "/docs/install-macos",
+    noteLabel: "Launch on Mac",
   },
   {
     key: "mac-intel",
@@ -74,6 +82,8 @@ const SLOTS: SlotDef[] = [
     pkgLabel: "Package:",
     pkgValue: "Mac .dmg (Intel x86_64)",
     buttonKind: ".dmg Intel",
+    noteHref: "/docs/install-macos",
+    noteLabel: "Launch on Mac",
   },
   {
     key: "linux-deb",
@@ -145,6 +155,8 @@ export function buildReleaseView(info: ReleaseInfo): ReleaseView {
       buttonStyle: "primary",
       buttonIcon: "download",
       buttonLabel: `Download ${slot.buttonKind} (${size})`,
+      noteHref: slot.noteHref,
+      noteLabel: slot.noteLabel,
     };
   });
   downloads.push({

@@ -2,7 +2,7 @@
 // Single home for all inline SVG art (stroke = currentColor, like the original).
 // Sizes come from CSS classes at the call site; pass `size` only where the
 // original markup used explicit width/height attributes (header GitHub badge).
-export type IconName = "code" | "download" | "terminal" | "monitor" | "desktopmac" | "windows" | "box" | "gear" | "file" | "zip" | "archive" | "archivebox" | "shield" | "shieldcheck" | "checkcircle" | "lock" | "wifioff" | "chat" | "send" | "sendbtn" | "attach" | "upload" | "users" | "server" | "lang" | "issue";
+export type IconName = "code" | "download" | "terminal" | "monitor" | "desktopmac" | "windows" | "box" | "gear" | "file" | "zip" | "archive" | "archivebox" | "shield" | "shieldcheck" | "checkcircle" | "lock" | "wifioff" | "chat" | "send" | "sendbtn" | "attach" | "upload" | "users" | "server" | "lang" | "issue" | "arrowright";
 
 export interface Props {
   name: IconName;
@@ -37,6 +37,9 @@ const ART: Record<IconName, string> = {
   server: '<rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/>',
   lang: '<path d="M4 5h9"/><path d="M8.5 3v2c0 4-2.5 7.5-5.5 9"/><path d="M5 9c1.5 2.5 4 4.5 7 5.5"/><path d="M12.5 21l4-9.5L20.5 21"/><path d="M14.2 17h4.6"/>',
   issue: '<circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>',
+  // Chunky right arrow (heavier 2.5 stroke): per-element attribute
+  // overrides the svg root's stroke-width="2" via normal inheritance.
+  arrowright: '<line x1="5" y1="12" x2="19" y2="12" stroke-width="2.5"/><polyline points="12 5 19 12 12 19" stroke-width="2.5"/>',
 };
 const art = ART[name];
 // Fail loudly on unknown icons instead of shipping an empty svg.

@@ -23,16 +23,24 @@ const { starsLabel, version: V, targets } = Astro.props;
     <p class="lede">Free and open-source instant messaging application for Windows, Mac, and Linux. Works seamlessly through your local network without internet or servers — secure, private, and lightning fast.</p>
 
     <div class="hero-cta">
-      <a
-        class="btn btn-primary"
-        id="hero-download-btn"
-        href={targets.windows.href}
-        data-targets={JSON.stringify(targets)}
-      >
-        <Icon name="download" />
-        <span id="hero-download-text">Download for Windows</span>
-        <span class="os-tag" id="hero-os-tag">v{V} .exe</span>
-      </a>
+      <span class="hero-dl-wrap">
+        <a
+          class="btn btn-primary"
+          id="hero-download-btn"
+          href={targets.windows.href}
+          data-targets={JSON.stringify(targets)}
+        >
+          <Icon name="download" />
+          <span id="hero-download-text">Download for Windows</span>
+          <span class="os-tag" id="hero-os-tag">v{V} .exe</span>
+        </a>
+        <a
+          class="hero-dl-cap"
+          id="hero-mac-cap"
+          href="/docs/install-macos"
+          hidden
+        >Mac blocked the first launch? One-command fix</a>
+      </span>
       <a class="btn btn-secondary" href={SITE.repo} target="_blank" rel="noreferrer">
         <Icon name="terminal" />
         <span>View on GitHub</span>
@@ -50,6 +58,38 @@ const { starsLabel, version: V, targets } = Astro.props;
     <Mockup />
   </div>
 </section>
+
+<style>
+  /* Anchor for the Mac caption strictly above the download button.
+     Absolute: never shifts buttons or badges. */
+  .hero-dl-wrap {
+    position: relative;
+    display: flex;
+  }
+  .hero-dl-wrap > .btn {
+    flex: 1 1 auto;
+  }
+  .hero-dl-cap {
+    position: absolute;
+    bottom: calc(100%);
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-size: 12px;
+    color: var(--warn-ink);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .hero-dl-cap:hover {
+    text-decoration: none;
+  }
+  .hero-dl-cap[hidden] {
+    display: none;
+  }
+</style>
 
 <script is:inline>
 /* Hero download button: pick the installer matching the visitor OS.
@@ -71,6 +111,7 @@ const { starsLabel, version: V, targets } = Astro.props;
     var btn = document.getElementById("hero-download-btn");
     var label = document.getElementById("hero-download-text");
     var tag = document.getElementById("hero-os-tag");
+    var cap = document.getElementById("hero-mac-cap");
     if (!btn || !label || !tag) return;
     var raw = btn.getAttribute("data-targets");
     if (!raw) return;
@@ -85,6 +126,8 @@ const { starsLabel, version: V, targets } = Astro.props;
     btn.setAttribute("href", target.href);
     label.textContent = target.text;
     tag.textContent = target.tag;
+    // Mac-only caption above the download button.
+    if (cap) cap.hidden = !set.mac || target !== set.mac;
   }
 
   if (document.readyState === "loading") {
