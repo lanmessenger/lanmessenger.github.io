@@ -72,9 +72,14 @@ jobs:
           test -f dist/favicon.ico || { echo "missing dist/favicon.ico" >&2; exit 1; }
           test -f dist/sitemap.xml || { echo "missing dist/sitemap.xml" >&2; exit 1; }
           test -f dist/robots.txt || { echo "missing dist/robots.txt" >&2; exit 1; }
-          # 1 landing + 7 docs pages, each with a self-referencing canonical.
+          # 1 landing + 1 per Markdown doc in SITE_DOCS_DIR (same **/*.md
+          # glob as the docs content collection), each with a self-referencing
+          # canonical.
+          docs_dir="${SITE_DOCS_DIR:-lmc/docs}"
+          docs_count=$(find "$docs_dir" -name '*.md' | wc -l)
+          expected=$((docs_count + 1))
           pages=$(find dist -name index.html | sort)
-          test "$(echo "$pages" | wc -l)" -eq 8 || { echo "expected 8 pages, got: $pages" >&2; exit 1; }
+          test "$(echo "$pages" | wc -l)" -eq "$expected" || { echo "expected $expected pages ($docs_count docs + landing), got: $pages" >&2; exit 1; }
           echo "$pages" | while read -r f; do
             grep -q '<link rel="canonical" href="https://lanmessenger.github.io[^"]*"' "$f" \
               || { echo "missing canonical in $f" >&2; exit 1; }
@@ -83,8 +88,10 @@ jobs:
           if grep -rq 'noindex\|nofollow' dist --include='*.html'; then
             echo "found noindex/nofollow in dist HTML" >&2; exit 1;
           fi
-          # Sitemap lists exactly the 8 canonical URLs.
-          test "$(grep -c '<loc>' dist/sitemap.xml)" -eq 8 || { echo "sitemap URL count != 8" >&2; exit 1; }
+          # Sitemap lists exactly the canonical URLs (landing + docs).
+          test "$(grep -c '<loc>' dist/sitemap.xml)" -eq "$expected" || { echo "sitemap URL count != $expected ($docs_count docs + landing)" >&2; exit 1; }
+        env:
+          SITE_DOCS_DIR: lmc/docs
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
