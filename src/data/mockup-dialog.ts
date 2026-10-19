@@ -1,7 +1,9 @@
-/* Single source of truth for the Hero chat mockup: dialogue, authors,
-   and how many opening steps SSR renders (the demo script continues
-   the same flow from there). Imported by Mockup.astro and
-   AppChatWindow.astro — no copies of these strings anywhere else. */
+/* Hero chat mockup content: dialogue builder, authors, and how many
+   opening steps SSR renders (the demo script continues the same flow
+   from there). The first line carries the resolved release version —
+   callers pass it down from the build-time release info. Imported by
+   Hero.astro (builds the dialogue) and Mockup.astro (renders it);
+   AppChatWindow.astro imports only the DialogLine type. */
 
 export interface DialogAuthor {
   name: string;
@@ -13,8 +15,6 @@ export interface DialogLine {
   text: string;
 }
 
-import { SITE } from "./site";
-
 const U = "images/lmc-ui";
 
 export const AUTHORS: Record<"alice" | "bob", DialogAuthor> = {
@@ -23,17 +23,19 @@ export const AUTHORS: Record<"alice" | "bob", DialogAuthor> = {
 };
 export type Authors = typeof AUTHORS;
 
-export const DIALOG: DialogLine[] = [
-  { from: "alice", text: `Ready for v${SITE.version}?` },
-  { from: "bob", text: "One last test. Disconnect the internet." },
-  { from: "alice", text: "Done. Still chatting." },
-  { from: "alice", text: "File transfer works too." },
-  { from: "bob", text: "Perfect. Ship it!" },
-  { from: "alice", text: "Already did." },
-  { from: "alice", text: "Half the office hasn't noticed" },
-  { from: "alice", text: "the internet is down yet \u{1F602}" },
-  { from: "bob", text: "No cloud. No drama. Just works." },
-];
+export function buildDialog(version: string): DialogLine[] {
+  return [
+    { from: "alice", text: `Ready for v${version}?` },
+    { from: "bob", text: "One last test. Disconnect the internet." },
+    { from: "alice", text: "Done. Still chatting." },
+    { from: "alice", text: "File transfer works too." },
+    { from: "bob", text: "Perfect. Ship it!" },
+    { from: "alice", text: "Already did." },
+    { from: "alice", text: "Half the office hasn't noticed" },
+    { from: "alice", text: "the internet is down yet \u{1F602}" },
+    { from: "bob", text: "No cloud. No drama. Just works." },
+  ];
+}
 
 export const START_AT = 1;
 

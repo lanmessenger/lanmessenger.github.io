@@ -2,7 +2,10 @@
 import Icon from "./Icon.astro";
 import { SITE } from "../data/site";
 
-const V = SITE.version;
+export interface Props {
+  version: string;
+}
+const { version: V } = Astro.props;
 ---
 <section class="section" id="support" aria-labelledby="support-title">
   <div class="wrap">

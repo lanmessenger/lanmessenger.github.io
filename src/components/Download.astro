@@ -1,13 +1,13 @@
 ---
 import Icon from "./Icon.astro";
-import { SITE } from "../data/site";
 import { ARCHIVE, type DownloadEntry } from "../data/downloads";
 
 export interface Props {
   version: string;
+  releaseTag: string;
   entries: DownloadEntry[];
 }
-const { version: V, entries } = Astro.props;
+const { version: V, releaseTag, entries } = Astro.props;
 ---
 <section class="section section-alt" id="download" aria-labelledby="download-title">
   <div class="wrap">
@@ -17,7 +17,7 @@ const { version: V, entries } = Astro.props;
         <h2 id="download-title">Download LAN Messenger v{V}</h2>
         <p>Choose the installer for your local operating system. Official builds for Windows, macOS and Linux, published as GitHub release assets with SHA-256 checksums.</p>
       </div>
-      <a class="btn btn-secondary" style="flex:none;" href={SITE.releaseTag} target="_blank" rel="noreferrer">
+      <a class="btn btn-secondary" style="flex:none;" href={releaseTag} target="_blank" rel="noreferrer">
         <Icon name="checkcircle" />
         <span>Release Notes v{V}</span>
       </a>

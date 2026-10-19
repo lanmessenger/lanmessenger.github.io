@@ -2,8 +2,18 @@
 import OsWindowFrame from "./OsWindowFrame.astro";
 import AppMainWindow from "./AppMainWindow.astro";
 import AppChatWindow from "./AppChatWindow.astro";
-import { AUTHORS, DIALOG, DIALOG_TIME, START_AT } from "../data/mockup-dialog";
+import {
+  AUTHORS,
+  DIALOG_TIME,
+  START_AT,
+  type DialogLine,
+} from "../data/mockup-dialog";
 import { CONTACTS } from "../data/mockup-contacts";
+
+export interface Props {
+  dialog: DialogLine[];
+}
+const { dialog } = Astro.props;
 ---
 
 <div class="hero-mockups">
@@ -23,7 +33,7 @@ import { CONTACTS } from "../data/mockup-contacts";
     />
   </OsWindowFrame>
   <div class="hero-chat" id="hero-chat-demo"
-    data-dialog={JSON.stringify(DIALOG)}
+    data-dialog={JSON.stringify(dialog)}
     data-start-at={START_AT}
     data-authors={JSON.stringify(AUTHORS)}>
     <OsWindowFrame title="Bob - Conversation" width="325px">
@@ -33,7 +43,7 @@ import { CONTACTS } from "../data/mockup-contacts";
         senderAvatar={AUTHORS.bob.avatar}
         aliceName={AUTHORS.alice.name}
         aliceAvatar={AUTHORS.alice.avatar}
-        dialog={DIALOG.slice(0, START_AT)}
+        dialog={dialog.slice(0, START_AT)}
       />
     </OsWindowFrame>
   </div>

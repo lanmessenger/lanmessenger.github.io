@@ -3,7 +3,9 @@
 # /docs pages read Markdown from the lmc repo (lmc/docs/), checked out
 # next to this repo and pointed at via SITE_DOCS_DIR (see src/lib/site.ts).
 # Release binaries metadata (stars, sizes, URLs) resolves at build time
-# from the public GitHub API — no secrets needed.
+# from the latest stable lmc release via the public GitHub API — no secrets
+# needed. Rebuilt on push, nightly (pick up new lmc tags), on demand,
+# and on repository_dispatch `lmc-release` sent by the lmc release workflow.
 name: Deploy site to Pages
 
 on:
@@ -11,6 +13,10 @@ on:
     branches: [master]
   pull_request:
     branches: [master]
+  schedule:
+    - cron: "0 3 * * *"
+  repository_dispatch:
+    types: [lmc-release]
   workflow_dispatch:
 
 permissions:

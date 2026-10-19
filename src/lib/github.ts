@@ -48,8 +48,9 @@ export function formatStars(n: number): string {
 
 // --- Release assets -------------------------------------------------------
 // Same build-time policy as stars: no fallback, any failure throws.
-// The release is pinned by SITE.version (tag `v<version>`), so a new upstream
-// release never silently swaps the binaries — the bump stays explicit.
+// The version is resolved from the latest stable upstream release
+// (tag `v<version>`) at build time, so a new lmc release is picked up
+// on the next site build without a manual VERSION bump.
 
 // 49073356 -> "46.8 MB", 1688862 -> "1.61 MB"
 export function formatBytes(bytes: number): string {
@@ -71,17 +72,36 @@ export interface ReleaseInfo {
 }
 
 let releaseCache: { at: number; value: ReleaseInfo } | null = null;
+let releaseCacheKey: string | null = null;
 
 export async function getReleaseInfo(tag: string): Promise<ReleaseInfo> {
-  if (releaseCache && Date.now() - releaseCache.at < TTL_MS)
+  if (releaseCache && releaseCacheKey === tag && Date.now() - releaseCache.at < TTL_MS)
     return releaseCache.value;
   const value = await fetchReleaseInfo(tag);
   releaseCache = { at: Date.now(), value };
+  releaseCacheKey = tag;
   return value;
 }
 
-async function fetchReleaseInfo(tag: string): Promise<ReleaseInfo> {
-  const url = `${API}/releases/tags/${tag}`;
+// Latest stable release (drafts and prereleases excluded by the API).
+// SITE_VERSION env overrides the lookup with a pinned tag `v<version>`
+// for local debugging of an older release.
+export async function getLatestReleaseInfo(): Promise<ReleaseInfo> {
+  const pinned = process.env.SITE_VERSION;
+  if (pinned) return getReleaseInfo(`v${pinned}`);
+  if (releaseCache && releaseCacheKey === "latest" && Date.now() - releaseCache.at < TTL_MS)
+    return releaseCache.value;
+  const value = await fetchReleaseInfo("latest");
+  releaseCache = { at: Date.now(), value };
+  releaseCacheKey = "latest";
+  return value;
+}
+
+async function fetchReleaseInfo(tagOrLatest: string): Promise<ReleaseInfo> {
+  const url =
+    tagOrLatest === "latest"
+      ? `${API}/releases/latest`
+      : `${API}/releases/tags/${tagOrLatest}`;
   const res = await fetch(url, {
     headers: {
       Accept: "application/vnd.github+json",
@@ -98,6 +118,8 @@ async function fetchReleaseInfo(tag: string): Promise<ReleaseInfo> {
   const rawAssets = Array.isArray(rec.assets) ? rec.assets : null;
   if (tagName === null || rawAssets === null)
     throw new Error(`GitHub API: release fields missing`);
+  if (!/^v\d+\.\d+\.\d+$/.test(tagName))
+    throw new Error(`GitHub API: unexpected tag_name ${tagName}`);
   const assets: ReleaseAsset[] = [];
   for (const item of rawAssets) {
     if (typeof item !== "object" || item === null) continue;

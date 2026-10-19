@@ -5,15 +5,16 @@ import Download from "../components/Download.astro";
 import Features from "../components/Features.astro";
 import Screenshots from "../components/Screenshots.astro";
 import Support from "../components/Support.astro";
-import { getRepoMeta, getReleaseInfo, formatStars } from "../lib/github";
-import { SITE } from "../data/site";
+import { getRepoMeta, getLatestReleaseInfo, formatStars } from "../lib/github";
+import { SITE, releaseTagFor } from "../data/site";
 import { buildReleaseView } from "../data/downloads";
 
-// Build-time data: stars + release assets resolve once during `astro build`.
+// Build-time data: stars + latest release assets resolve once during `astro build`.
 // No fallbacks — if the API is unreachable, the build fails.
+// SITE_VERSION env pins an older tag `v<version>` for local debugging.
 const [{ stars }, releaseInfo] = await Promise.all([
   getRepoMeta(),
-  getReleaseInfo(`v${SITE.version}`),
+  getLatestReleaseInfo(),
 ]);
 const starsLabel = `${formatStars(stars)} stars`;
 const release = buildReleaseView(releaseInfo);
@@ -40,8 +41,8 @@ const softwareJsonLd = {
     version={release.version}
     targets={release.heroTargets}
   />
-  <Download version={release.version} entries={release.downloads} />
+  <Download version={release.version} releaseTag={releaseTagFor(release.version)} entries={release.downloads} />
   <Features />
   <Screenshots />
-  <Support />
+  <Support version={release.version} />
 </BaseLayout>
