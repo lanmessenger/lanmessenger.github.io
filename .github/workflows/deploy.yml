@@ -84,6 +84,12 @@ jobs:
             grep -q '<link rel="canonical" href="https://lanmessenger.github.io[^"]*"' "$f" \
               || { echo "missing canonical in $f" >&2; exit 1; }
           done
+          # Docs images: required in dist iff the docs source ships them.
+          if [ -d "$docs_dir/images" ]; then
+            test -d dist/docs-images || { echo "missing dist/docs-images" >&2; exit 1; }
+            test "$(find dist/docs-images -type f | wc -l)" -eq "$(find "$docs_dir/images" -type f | wc -l)" \
+              || { echo "docs-images file count mismatch" >&2; exit 1; }
+          fi
           # No accidental indexation blocks.
           if grep -rq 'noindex\|nofollow' dist --include='*.html'; then
             echo "found noindex/nofollow in dist HTML" >&2; exit 1;
