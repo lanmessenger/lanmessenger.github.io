@@ -39,4 +39,4 @@ export function buildDialog(version: string): DialogLine[] {
 
 export const START_AT = 1;
 
-export const DIALOG_TIME = "(5:20 PM)";
+export const DIALOG_TIME = "16:06";

@@ -34,69 +34,82 @@ export function playDemo(
     var typed = root.querySelector(".cw-input .cw-typed");
     var log = root.querySelector(".cw-log");
     if (!typed || !log) return;
-    var seeds = collectSeeds();
-    if (!seeds) return;
+    if (!log.querySelector(".msg")) return;
     var staticHTML = log.innerHTML;
+    var ref = log.querySelector(".msg") as Element;
+    var scope = scopeNames(ref);
+    var timeEl = log.querySelector(".head .time");
+    var time = timeEl ? timeEl.textContent || "" : "";
 
-    function copyScopeAttrs(from: Element, to: Element): void {
-      for (var i = 0; i < from.attributes.length; i++) {
-        var n = from.attributes[i].name;
-        if (n.indexOf("data-astro-cid") === 0) to.setAttribute(n, "");
+    function scopeNames(ref: Element): string[] {
+      var names: string[] = [];
+      for (var i = 0; i < ref.attributes.length; i++) {
+        var n = ref.attributes[i].name;
+        if (n.indexOf("data-astro-cid") === 0) names.push(n);
       }
+      return names;
     }
 
-    function collectSeeds(): {
-      alice: Element;
-      bob: Element;
-      next: Element;
-    } | null {
-      var alice = log.querySelector('.cw-msg[data-author="alice"]');
-      if (!alice) return null;
-      /* Static SSR may hold only the opening line: derive the missing
-         seeds by cloning (scope attributes survive cloning, and addLine
-         overwrites avatar/name/text on every use anyway). */
-      var bob = log.querySelector('.cw-msg[data-author="bob"]');
-      if (!bob) {
-        bob = alice.cloneNode(true) as Element;
-        bob.setAttribute("data-author", "bob");
-      }
-      var next = log.querySelector(".cw-next");
-      if (!next) {
-        next = document.createElement("div");
-        next.className = "cw-next";
-        copyScopeAttrs(alice, next);
-        var line = alice.querySelector(".cw-line");
-        if (!line) return null;
-        next.appendChild(line.cloneNode(true));
-      }
-      return { alice: alice, bob: bob, next: next };
+    function paintScope(el: Element, names: string[]): void {
+      var k: number;
+      for (k = 0; k < names.length; k++) el.setAttribute(names[k], "");
+      var kids = el.querySelectorAll("*");
+      for (var j = 0; j < kids.length; j++)
+        for (k = 0; k < names.length; k++) kids[j].setAttribute(names[k], "");
     }
 
-    /* Cloned nodes keep the component scope attributes, so scoped
-       .cw-msg/.cw-row/.cw-line styles apply to demo messages. */
     function addLine(step: DialogLine, prevFrom: string): Element | null {
-      var node: Element;
-      if (prevFrom === step.from) {
-        node = seeds.next.cloneNode(true) as Element;
-        node.setAttribute("data-author", step.from);
-        var spans = node.querySelectorAll(".cw-line span");
-        if (spans.length < 2) return null;
-        spans[1].textContent = step.text;
+      var next = prevFrom === step.from;
+      var wrap = document.createElement("div");
+      if (step.from === "bob") {
+        if (next) {
+          wrap.className = "msg in-next demo-in";
+          wrap.setAttribute("data-author", "bob");
+          wrap.innerHTML = '<div class="bubble"></div>';
+          var nb = wrap.querySelector(".bubble");
+          if (!nb) return null;
+          nb.textContent = step.text;
+        } else {
+          wrap.className = "msg in demo-in";
+          wrap.setAttribute("data-author", "bob");
+          wrap.innerHTML =
+            '<img alt="" width="28" height="28"/><div class="col"><div class="head">' +
+            '<span class="name"></span><span class="time"></span></div>' +
+            '<div class="bubble"></div></div>';
+          var img = wrap.querySelector("img");
+          var nm = wrap.querySelector(".name");
+          var tm = wrap.querySelector(".head .time");
+          var bb = wrap.querySelector(".bubble");
+          if (!img || !nm || !tm || !bb) return null;
+          img.setAttribute("src", authors[step.from].avatar);
+          nm.textContent = authors[step.from].name;
+          tm.textContent = time;
+          bb.textContent = step.text;
+        }
       } else {
-        node = (seeds as Record<string, Element>)[step.from].cloneNode(
-          true,
-        ) as Element;
-        var avatar = node.querySelector(".cw-row img");
-        var name = node.querySelector(".cw-name");
-        var line = node.querySelectorAll(".cw-line span");
-        if (!avatar || !name || line.length < 2) return null;
-        avatar.setAttribute("src", authors[step.from].avatar);
-        name.textContent = authors[step.from].name;
-        line[1].textContent = step.text;
+        if (next) {
+          wrap.className = "msg out-next demo-in";
+          wrap.setAttribute("data-author", "alice");
+          wrap.innerHTML = '<div class="bubble"></div>';
+          var ob = wrap.querySelector(".bubble");
+          if (!ob) return null;
+          ob.textContent = step.text;
+        } else {
+          wrap.className = "msg out demo-in";
+          wrap.setAttribute("data-author", "alice");
+          wrap.innerHTML =
+            '<div class="head"><span class="you">You</span><span class="time"></span></div>' +
+            '<div class="bubble"></div>';
+          var ot = wrap.querySelector(".head .time");
+          var ox = wrap.querySelector(".bubble");
+          if (!ot || !ox) return null;
+          ot.textContent = time;
+          ox.textContent = step.text;
+        }
       }
-      node.classList.add("demo-in");
-      log.appendChild(node);
-      return node;
+      paintScope(wrap, scope);
+      log.appendChild(wrap);
+      return wrap;
     }
 
     async function fadeReset(): Promise<void> {
@@ -108,6 +121,7 @@ export function playDemo(
     }
 
     async function playFrom(k: number): Promise<void> {
+      if (k <= 0 || k >= STEPS.length) return;
       var prevFrom = STEPS[k - 1].from;
       for (var s = k; s < STEPS.length; s++) {
         var step = STEPS[s];

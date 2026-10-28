@@ -1,43 +1,38 @@
 ---
 import { type DialogLine } from "../data/mockup-dialog";
-export interface Props {  senderName: string;
-  senderTime: string;
-  senderAvatar: string;
-  aliceName: string;
-  aliceAvatar: string;
+export interface Props {  peerName: string;
+  peerTime: string;
+  peerAvatar: string;
   dialog: DialogLine[];
 }
-const {
-  senderName,
-  senderTime,
-  senderAvatar,
-  aliceName,
-  aliceAvatar,
-  dialog,
-} = Astro.props;
-const U = "images/lmc-ui";const authorOf = (from: "alice" | "bob") =>
-  from === "alice" ? { name: aliceName, avatar: aliceAvatar } : { name: senderName, avatar: senderAvatar };
+const { peerName, peerTime, peerAvatar, dialog } = Astro.props;
+const U = "images/lmc-ui";
 ---
 
-<div class="cw" role="img" aria-label={`LAN Messenger chat with ${senderName}`}>
+<div class="cw" role="img" aria-label={`LAN Messenger chat with ${peerName}`}>
   <div class="cw-log">
     {dialog.map((line, i) => {
-      const author = authorOf(line.from);
-      return i === 0 || dialog[i - 1].from !== line.from ? (
-        <div class="cw-msg" data-author={line.from}>
-          <div class="cw-blue" aria-hidden="true"></div>
-          <div class="cw-row">
-            <img src={author.avatar} alt="" width="32" height="32" />
-            <div class="cw-text">
-              <div class="cw-name">{author.name}</div>
-              <div class="cw-line"><span class="t">{senderTime} </span><span>{line.text}</span></div>
+      const start = i === 0 || dialog[i - 1].from !== line.from;
+      if (line.from === "bob") {
+        return start ? (
+          <div class="msg in" data-author="bob">
+            <img src={peerAvatar} alt="" width="28" height="28" />
+            <div class="col">
+              <div class="head"><span class="name">{peerName}</span><span class="time">{peerTime}</span></div>
+              <div class="bubble">{line.text}</div>
             </div>
           </div>
+        ) : (
+          <div class="msg in-next" data-author="bob"><div class="bubble">{line.text}</div></div>
+        );
+      }
+      return start ? (
+        <div class="msg out" data-author="alice">
+          <div class="head"><span class="you">You</span><span class="time">{peerTime}</span></div>
+          <div class="bubble">{line.text}</div>
         </div>
       ) : (
-        <div class="cw-next" data-author={line.from}>
-          <div class="cw-line"><span class="t">{senderTime} </span><span>{line.text}</span></div>
-        </div>
+        <div class="msg out-next" data-author="alice"><div class="bubble">{line.text}</div></div>
       );
     })}
   </div>
@@ -85,55 +80,74 @@ const U = "images/lmc-ui";const authorOf = (from: "alice" | "bob") =>
   }
   .cw img { display: block; }
 
-  /* Log: y0-290, 1px #7A7A7A border (top/right/bottom/left) */
   .cw-log {
     flex: none;
     height: 291px;
     border: 1px solid #7a7a7a;
-    background: #fff;
+    background: #f4f5f7;
     overflow-y: auto;
+    padding: 8px;
     transition: opacity 0.3s;
   }
-  /* Demo act switch: script fades the log out before clearing it */
   .cw-log.is-switching { opacity: 0; }
-  /* Demo nodes fade-slide in on append */
-  .cw-msg.demo-in,
-  .cw-next.demo-in { animation: cw-in 0.25s ease-out; }
+  .msg.demo-in { animation: cw-in 0.25s ease-out; }
   @keyframes cw-in { from { opacity: 0; transform: translateY(4px); } }
-  .cw-msg { margin: 0 4px; }
-  /* Classic theme blue bar: x7-317, y11-13 */
-  .cw-blue {
-    height: 3px;
-    background: #0000b0;
-    margin: 10px 2px 0;
-  }
-  .cw-row {
-    display: flex;
-    margin: 2px 2px 0;
-  }
-  .cw-row img {
+  .msg { margin-top: 8px; }
+  .msg:first-child { margin-top: 0; }
+  .msg.in-next, .msg.out-next { margin-top: 2px; }
+  .in { display: flex; gap: 8px; }
+  .in img {
     flex: none;
-    width: 32px;
-    height: 32px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
   }
-  .cw-text {
-    padding-left: 10px;
-    min-width: 0;
-  }
-  .cw-name {
-    font-weight: 700;
-    padding-top: 3px;
-  }
-  .cw-line {
-    margin-top: 6px;
+  .in .col { flex: 1; min-width: 0; }
+  .head {
+    font-size: 12px;
+    line-height: 1.35;
+    margin-bottom: 2px;
     white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
-  .cw-line .t { color: #777; }
-  /* Follow-up messages from the same author: time+text line only, x17 */
-  .cw-next { margin: 12px 4px 0; }
-  .cw-next .cw-line {
-    margin-top: 0;
-    padding-left: 12px;
+  .in .name { font-weight: 600; color: #1e293b; }
+  .head .time { color: #64748b; }
+  .in .head .time { margin-left: 6px; }
+  .out .head { text-align: right; color: #64748b; }
+  .out .head .you { margin-right: 6px; }
+  .bubble {
+    font-size: 12px;
+    line-height: 1.4;
+    padding: 10px 12px;
+    max-width: 84%;
+    width: fit-content;
+    overflow-wrap: break-word;
+  }
+  .in .bubble {
+    background: linear-gradient(#ffffff, #f8f9fa);
+    border: 1px solid #e2e8f0;
+    border-radius: 12px 12px 12px 2px;
+    color: #1e293b;
+  }
+  .in-next .bubble {
+    margin-left: 36px;
+    background: linear-gradient(#ffffff, #f8f9fa);
+    border: 1px solid #e2e8f0;
+    border-radius: 2px 12px 12px 2px;
+    color: #1e293b;
+  }
+  .out { display: flex; flex-direction: column; align-items: flex-end; }
+  .out .bubble {
+    background: linear-gradient(#2563eb, #1d4ed8);
+    border-radius: 12px 12px 2px 12px;
+    color: #fff;
+  }
+  .out-next { display: flex; flex-direction: column; align-items: flex-end; }
+  .out-next .bubble {
+    background: linear-gradient(#2563eb, #1d4ed8);
+    border-radius: 12px 2px 2px 12px;
+    color: #fff;
   }
 
   /* Splitter: log bottom y290, grip y291-297 (vgrip 54x7, x135) */

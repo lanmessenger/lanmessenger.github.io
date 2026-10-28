@@ -38,11 +38,9 @@ const { dialog } = Astro.props;
     data-authors={JSON.stringify(AUTHORS)}>
     <OsWindowFrame title="Bob - Conversation" width="325px">
       <AppChatWindow
-        senderName={AUTHORS.bob.name}
-        senderTime={DIALOG_TIME}
-        senderAvatar={AUTHORS.bob.avatar}
-        aliceName={AUTHORS.alice.name}
-        aliceAvatar={AUTHORS.alice.avatar}
+        peerName={AUTHORS.bob.name}
+        peerTime={DIALOG_TIME}
+        peerAvatar={AUTHORS.bob.avatar}
         dialog={dialog.slice(0, START_AT)}
       />
     </OsWindowFrame>
