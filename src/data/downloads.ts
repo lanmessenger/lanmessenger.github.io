@@ -87,7 +87,7 @@ const SLOTS: SlotDef[] = [
   },
   {
     key: "linux-deb",
-    match: /_x86_64_min\.deb$/,
+    match: /_amd64\.deb$/,
     icon: "terminal",
     iconTone: "green",
     badge: "Debian / Ubuntu",
@@ -99,7 +99,7 @@ const SLOTS: SlotDef[] = [
   },
   {
     key: "linux-rpm",
-    match: /x86_64_min\.rpm$/,
+    match: /\.x86_64\.rpm$/,
     icon: "box",
     iconTone: "green",
     badge: "Fedora / RHEL",
