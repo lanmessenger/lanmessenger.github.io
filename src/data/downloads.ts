@@ -96,6 +96,8 @@ const SLOTS: SlotDef[] = [
     pkgLabel: "Package:",
     pkgValue: "Linux .deb",
     buttonKind: ".deb",
+    noteHref: "/docs/install-linux",
+    noteLabel: "Install on Linux",
   },
   {
     key: "linux-rpm",
@@ -108,6 +110,8 @@ const SLOTS: SlotDef[] = [
     pkgLabel: "Package:",
     pkgValue: "Linux .rpm",
     buttonKind: ".rpm",
+    noteHref: "/docs/install-linux",
+    noteLabel: "Install on Linux",
   },
 ];
 

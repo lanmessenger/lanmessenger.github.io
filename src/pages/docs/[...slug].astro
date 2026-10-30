@@ -4,12 +4,13 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 import DocsSidebar from "../../components/DocsSidebar.astro";
 import { getRepoMeta, formatStars } from "../../lib/github";
 
-// Explicit sidebar order: overview first, then the macOS install guide,
+// Explicit sidebar order: overview first, then the install guides,
 // then the generic build guides, per-platform builds, and references last.
 // index.md -> /docs (not /docs/index).
 const DOCS_ORDER = [
   "index",
   "install-macos",
+  "install-linux",
   "build",
   "build-prerequisites",
   "build-linux",
