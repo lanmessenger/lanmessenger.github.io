@@ -56,6 +56,8 @@ const SLOTS: SlotDef[] = [
     pkgLabel: "Package:",
     pkgValue: "Windows .exe installer",
     buttonKind: ".exe",
+    noteHref: "/docs/install-windows",
+    noteLabel: "Install on Windows",
   },
   {
     key: "mac-arm64",

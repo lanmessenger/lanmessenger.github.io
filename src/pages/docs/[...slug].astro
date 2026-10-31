@@ -9,6 +9,7 @@ import { getRepoMeta, formatStars } from "../../lib/github";
 // index.md -> /docs (not /docs/index).
 const DOCS_ORDER = [
   "index",
+  "install-windows",
   "install-macos",
   "install-linux",
   "build",
@@ -129,6 +130,17 @@ const starsLabel = `${formatStars(stars)} stars`;
   }
   .docs-body :global(a) {
     color: var(--primary);
+  }
+  .docs-body :global(blockquote) {
+    border-left: 3px solid var(--primary);
+    background: var(--surface-low);
+    border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
+    padding: 0.75rem 1rem;
+    margin: 1rem 0;
+    font-size: 14px;
+  }
+  .docs-body :global(blockquote p) {
+    margin: 0;
   }
   /* NOTE: content selectors need :global() — <Content /> renders bare
      <table>/<th>/<td> without this component's data-astro-cid, so plain
