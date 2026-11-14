@@ -17,15 +17,15 @@ const { version: V } = Astro.props;
     <div class="support-grid">
       <div class="support-card">
         <h3>Get help, shape the roadmap</h3>
-        <p>Found a bug on your subnet, or need help with deployment on RDS / Citrix? Open an issue — include your OS, app version, and network setup.</p>
+        <p>Need help with setup or deployment on RDS / Citrix? Ask in Discussions — include your OS, app version, and network setup. Confirmed bugs go to Issues.</p>
         <div class="support-cta">
-          <a class="btn btn-primary" href={SITE.issues} target="_blank" rel="noreferrer">
+          <a class="btn btn-primary" href={SITE.discussions} target="_blank" rel="noreferrer">
+            <Icon name="chat" />
+            <span>Ask a Question</span>
+          </a>
+          <a class="btn btn-secondary" href={SITE.issues} target="_blank" rel="noreferrer">
             <Icon name="issue" />
             <span>Report an Issue</span>
-          </a>
-          <a class="btn btn-secondary" href={SITE.repo} target="_blank" rel="noreferrer">
-            <Icon name="code" />
-            <span>Contribute Code</span>
           </a>
         </div>
       </div>

@@ -5,6 +5,7 @@
 export const SITE = {
   repo: "https://github.com/lanmessenger/lanmessenger",
   issues: "https://github.com/lanmessenger/lanmessenger/issues",
+  discussions: "https://github.com/lanmessenger/lanmessenger/discussions",
   releases: "https://github.com/lanmessenger/lanmessenger/releases",
   licenseUrl:
     "https://github.com/lanmessenger/lanmessenger/blob/master/LICENSE",
