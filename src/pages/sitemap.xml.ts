@@ -9,6 +9,7 @@ export const GET: APIRoute = async ({ site }) => {
   const docs = await getCollection("docs");
   const paths = [
     "/",
+    "/privacy",
     ...docs.map((d) => (d.id === "index" ? "/docs" : `/docs/${d.id}`)),
   ];
   const urls = [...new Set(paths)]

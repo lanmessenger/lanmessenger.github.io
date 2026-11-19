@@ -1,0 +1,96 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { SITE } from "../data/site";
+import { getRepoMeta, formatStars } from "../lib/github";
+
+// Same build-time policy as landing/docs: no fallback, build fails if unreachable.
+const { stars } = await getRepoMeta();
+const starsLabel = `${formatStars(stars)} stars`;
+---
+<BaseLayout
+  title="Privacy Policy — LAN Messenger"
+  description="Privacy policy for LAN Messenger: no accounts, no servers, no telemetry. Your data stays on your devices and your local network."
+  starsLabel={starsLabel}
+  canonical="/privacy"
+>
+  <section class="section">
+    <div class="wrap privacy">
+      <h1>Privacy Policy</h1>
+      <p class="muted">Last updated: November 19, 2026</p>
+      <p>
+        This policy applies to LAN Messenger, including the Microsoft Store
+        listing “LAN Messenger Open Source”. The application is a serverless
+        messenger for local networks: there are no accounts, no central
+        servers, and no cloud services operated by us.
+      </p>
+
+      <h2>Data we collect</h2>
+      <p>
+        We collect nothing. The app sends no telemetry, analytics, crash
+        reports, or advertising identifiers to us or to any third party.
+        Update checks are exchanged with peers on your local network only,
+        not over the internet.
+      </p>
+
+      <h2>Data that stays on your devices</h2>
+      <p>
+        Settings, contact list, message history, and transferred files are
+        stored locally on your own devices (for example in the application
+        configuration and data folders). We never see or store this data.
+        Uninstalling the app does not automatically delete files you already
+        received — delete them yourself if needed.
+      </p>
+
+      <h2>Data shared over your local network</h2>
+      <p>
+        To work at all, the app necessarily sends what you type or share
+        (display name, messages, files, voice/video call signalling) directly
+        to the peers you communicate with on your local network. Anyone with
+        access to that network segment may be able to observe this traffic,
+        so do not use the app on networks you do not trust.
+      </p>
+
+      <h2>Third parties</h2>
+      <p>
+        The app itself contacts no third-party services. If you download it
+        from the Microsoft Store, GitHub Releases, Flathub, or another
+        distributor, that distributor’s own privacy terms apply to the
+        download.
+      </p>
+
+      <h2>Changes and contact</h2>
+      <p>
+        If this policy changes, the updated version will be published here.
+        Questions: open an issue at{" "}
+        <a href={SITE.issues} target="_blank" rel="noreferrer">the issue tracker</a>{" "}
+        or start a{" "}
+        <a href={SITE.discussions} target="_blank" rel="noreferrer">community discussion</a>.
+      </p>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .privacy {
+    max-width: 46rem;
+    display: grid;
+    gap: 1rem;
+    font-size: 15px;
+    line-height: 1.7;
+  }
+  .privacy h1 {
+    font-size: 32px;
+    font-weight: 700;
+  }
+  .privacy h2 {
+    font-size: 20px;
+    font-weight: 700;
+    margin-top: 1rem;
+  }
+  .privacy .muted {
+    color: var(--faint);
+  }
+  .privacy a {
+    color: var(--primary);
+  }
+</style>
