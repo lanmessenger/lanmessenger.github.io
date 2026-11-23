@@ -123,10 +123,20 @@ export interface HeroTarget {
   tag: string;
 }
 
+// One hero split-button menu item; hrefs resolved from release assets.
+export interface HeroAlternative {
+  href: string;
+  title: string;
+  sub: string;
+  size: string;
+}
+
 export interface HeroTargets {
   windows: HeroTarget;
   mac: HeroTarget;
   linux: HeroTarget;
+  linuxAlternatives: HeroAlternative[];
+  macAlternatives: HeroAlternative[];
 }
 
 export interface ReleaseView {
@@ -138,6 +148,7 @@ export interface ReleaseView {
 export function buildReleaseView(info: ReleaseInfo): ReleaseView {
   const { version, assets } = info;
   const hrefByKey = new Map<string, string>();
+  const sizeByKey = new Map<string, string>();
   const downloads: DownloadEntry[] = SLOTS.map((slot) => {
     const hit = assets.find((a) => slot.match.test(a.name));
     if (!hit)
@@ -146,6 +157,7 @@ export function buildReleaseView(info: ReleaseInfo): ReleaseView {
       );
     hrefByKey.set(slot.key, hit.url);
     const size = formatBytes(hit.size);
+    sizeByKey.set(slot.key, size);
     return {
       icon: slot.icon,
       iconTone: slot.iconTone,
@@ -186,6 +198,19 @@ export function buildReleaseView(info: ReleaseInfo): ReleaseView {
     if (!v) throw new Error(`Release v${version}: missing href for "${key}"`);
     return v;
   };
+  const size = (key: string): string => {
+    const v = sizeByKey.get(key);
+    if (!v) throw new Error(`Release v${version}: missing size for "${key}"`);
+    return v;
+  };
+  // No .zst Download card yet: resolve separately, same loud-fail.
+  const zstMatch = /\.pkg\.tar\.zst$/;
+  const zstHit = assets.find((a) => zstMatch.test(a.name));
+  if (!zstHit)
+    throw new Error(
+      `Release v${version}: no asset matching ${zstMatch} for "linux-zst"`
+    );
+  const zstSize = formatBytes(zstHit.size);
   return {
     version,
     downloads,
@@ -205,6 +230,40 @@ export function buildReleaseView(info: ReleaseInfo): ReleaseView {
         text: "Download for Linux",
         tag: ".deb x64",
       },
+      linuxAlternatives: [
+        {
+          href: href("linux-deb"),
+          title: ".deb Package",
+          sub: "Ubuntu, Debian, Pop!_OS",
+          size: size("linux-deb"),
+        },
+        {
+          href: href("linux-rpm"),
+          title: ".rpm Package",
+          sub: "Fedora, RHEL, openSUSE",
+          size: size("linux-rpm"),
+        },
+        {
+          href: zstHit.url,
+          title: ".zst Package",
+          sub: "Arch Linux, Manjaro",
+          size: zstSize,
+        },
+      ],
+      macAlternatives: [
+        {
+          href: href("mac-arm64"),
+          title: ".dmg Apple Silicon",
+          sub: "M-series Macs",
+          size: size("mac-arm64"),
+        },
+        {
+          href: href("mac-intel"),
+          title: ".dmg Intel",
+          sub: "Intel Macs",
+          size: size("mac-intel"),
+        },
+      ],
     },
   };
 }
