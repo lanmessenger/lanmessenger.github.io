@@ -8,15 +8,29 @@ const API = "https://api.github.com/repos/lanmessenger/lanmessenger";
 
 // In-memory cache: in `astro dev` the frontmatter re-runs on every page
 // request, so without this each reload would pay a full API round-trip.
-// Refreshed at most once per hour.
+// Refreshed at most once per hour. The in-flight promise is shared too,
+// so parallel renders (index + version endpoint during `astro build`)
+// collapse into a single request instead of racing two fetches.
 let cache: { at: number; value: RepoMeta } | null = null;
+let pendingCache: { at: number; promise: Promise<RepoMeta> } | null = null;
 const TTL_MS = 60 * 60 * 1000;
 
 export async function getRepoMeta(): Promise<RepoMeta> {
-  if (cache && Date.now() - cache.at < TTL_MS) return cache.value;
-  const value = await fetchRepoMeta();
-  cache = { at: Date.now(), value };
-  return value;
+  const now = Date.now();
+  if (cache && now - cache.at < TTL_MS) return cache.value;
+  if (pendingCache && now - pendingCache.at < TTL_MS) return pendingCache.promise;
+  const promise = fetchRepoMeta().then(
+    (value) => {
+      cache = { at: Date.now(), value };
+      return value;
+    },
+    (e) => {
+      if (pendingCache?.promise === promise) pendingCache = null;
+      throw e;
+    },
+  );
+  pendingCache = { at: now, promise };
+  return promise;
 }
 
 async function fetchRepoMeta(): Promise<RepoMeta> {
@@ -73,14 +87,33 @@ export interface ReleaseInfo {
 
 let releaseCache: { at: number; value: ReleaseInfo } | null = null;
 let releaseCacheKey: string | null = null;
+// Same race as above: index.astro + version.ts render in parallel,
+// so share the in-flight promise per key ("latest" or explicit tag).
+const pendingReleases = new Map<string, { at: number; promise: Promise<ReleaseInfo> }>();
+
+async function getCachedRelease(key: string, fetchArg: string): Promise<ReleaseInfo> {
+  const now = Date.now();
+  if (releaseCache && releaseCacheKey === key && now - releaseCache.at < TTL_MS)
+    return releaseCache.value;
+  const pending = pendingReleases.get(key);
+  if (pending && now - pending.at < TTL_MS) return pending.promise;
+  const promise = fetchReleaseInfo(fetchArg).then(
+    (value) => {
+      releaseCache = { at: Date.now(), value };
+      releaseCacheKey = key;
+      return value;
+    },
+    (e) => {
+      if (pendingReleases.get(key)?.promise === promise) pendingReleases.delete(key);
+      throw e;
+    },
+  );
+  pendingReleases.set(key, { at: now, promise });
+  return promise;
+}
 
 export async function getReleaseInfo(tag: string): Promise<ReleaseInfo> {
-  if (releaseCache && releaseCacheKey === tag && Date.now() - releaseCache.at < TTL_MS)
-    return releaseCache.value;
-  const value = await fetchReleaseInfo(tag);
-  releaseCache = { at: Date.now(), value };
-  releaseCacheKey = tag;
-  return value;
+  return getCachedRelease(tag, tag);
 }
 
 // Latest stable release (drafts and prereleases excluded by the API).
@@ -89,12 +122,7 @@ export async function getReleaseInfo(tag: string): Promise<ReleaseInfo> {
 export async function getLatestReleaseInfo(): Promise<ReleaseInfo> {
   const pinned = process.env.SITE_VERSION;
   if (pinned) return getReleaseInfo(`v${pinned}`);
-  if (releaseCache && releaseCacheKey === "latest" && Date.now() - releaseCache.at < TTL_MS)
-    return releaseCache.value;
-  const value = await fetchReleaseInfo("latest");
-  releaseCache = { at: Date.now(), value };
-  releaseCacheKey = "latest";
-  return value;
+  return getCachedRelease("latest", "latest");
 }
 
 async function fetchReleaseInfo(tagOrLatest: string): Promise<ReleaseInfo> {
