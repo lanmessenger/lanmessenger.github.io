@@ -56,11 +56,13 @@ async function fetchGitHubApi(url: string): Promise<Response> {
   let lastError: unknown = null;
   for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
     let res: Response;
+    const token = process.env.GITHUB_TOKEN;
     try {
       res = await fetch(url, {
         headers: {
           Accept: "application/vnd.github+json",
           "User-Agent": "lmc-site-build",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
         signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
       });

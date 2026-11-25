@@ -63,6 +63,7 @@ jobs:
         run: pnpm build
         env:
           SITE_DOCS_DIR: lmc/docs
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Verify deployable output
         run: |
