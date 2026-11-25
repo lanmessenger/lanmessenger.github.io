@@ -6,6 +6,103 @@ export interface RepoMeta {
 
 const API = "https://api.github.com/repos/lanmessenger/lanmessenger";
 
+// Anonymous CI calls hit GitHub rate limits (shared runner IPs). Retry fast,
+// but never wait out a long primary-limit reset: fail loud, rerun picks it up.
+const FETCH_TIMEOUT_MS = 10_000;
+const MAX_ATTEMPTS = 4;
+const BASE_DELAY_MS = 1500;
+const MAX_WAIT_MS = 60_000;
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function parseRetryAfterMs(value: string | null): number | null {
+  if (!value) return null;
+  const secs = Number(value);
+  if (Number.isFinite(secs)) return Math.max(0, secs * 1000);
+  const at = Date.parse(value);
+  if (!Number.isNaN(at)) return Math.max(0, at - Date.now());
+  return null;
+}
+
+function rateLimitResetWaitMs(res: Response): number | null {
+  const reset = parseResetMs(res.headers.get("x-ratelimit-reset"));
+  if (reset === null) return null;
+  return Math.max(0, reset - Date.now());
+}
+
+function parseResetMs(raw: string | null): number | null {
+  if (!raw) return null;
+  const ms = Number(raw) * 1000;
+  return Number.isFinite(ms) ? ms : null;
+}
+
+function rateLimitDetail(res: Response): string {
+  const remaining = res.headers.get("x-ratelimit-remaining");
+  const reset = res.headers.get("x-ratelimit-reset");
+  const retryAfter = res.headers.get("retry-after");
+  const parts = [`status ${res.status}`];
+  if (remaining !== null) parts.push(`remaining=${remaining}`);
+  if (reset !== null) {
+    const ms = parseResetMs(reset);
+    parts.push(ms === null ? `reset=${reset}` : `reset=${new Date(ms).toISOString()}`);
+  }
+  if (retryAfter !== null) parts.push(`retry-after=${retryAfter}`);
+  return parts.join(" ");
+}
+
+async function fetchGitHubApi(url: string): Promise<Response> {
+  let lastError: unknown = null;
+  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+    let res: Response;
+    try {
+      res = await fetch(url, {
+        headers: {
+          Accept: "application/vnd.github+json",
+          "User-Agent": "lmc-site-build",
+        },
+        signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
+      });
+    } catch (e) {
+      lastError = e;
+      if (attempt === MAX_ATTEMPTS) break;
+      const wait = BASE_DELAY_MS * 2 ** (attempt - 1) + Math.random() * 500;
+      console.warn(
+        `[github] ${url} attempt ${attempt}/${MAX_ATTEMPTS} network error, retry in ${Math.round(wait)}ms: ${e}`,
+      );
+      await sleep(wait);
+      continue;
+    }
+    if (res.ok) return res;
+    const retryAfterMs = parseRetryAfterMs(res.headers.get("retry-after"));
+    const resetWaitMs = rateLimitResetWaitMs(res);
+    const detail = rateLimitDetail(res);
+    // 403 without rate-limit signals is permanent: fail immediately.
+    const retryable =
+      res.status === 429 ||
+      res.status >= 500 ||
+      (res.status === 403 &&
+        (retryAfterMs !== null || res.headers.get("x-ratelimit-remaining") === "0"));
+    await res.arrayBuffer().catch(() => undefined);
+    if (!retryable || attempt === MAX_ATTEMPTS) {
+      throw new Error(`GitHub API ${detail}: ${url}`);
+    }
+    const fallbackWait = BASE_DELAY_MS * 2 ** (attempt - 1) + Math.random() * 500;
+    const wait = Math.max(retryAfterMs ?? 0, resetWaitMs ?? 0, fallbackWait, 1000);
+    if (wait > MAX_WAIT_MS) {
+      throw new Error(
+        `GitHub API ${detail}: ${url} (wait ${Math.round(wait / 1000)}s exceeds ${MAX_WAIT_MS / 1000}s cap, rerun later)`,
+      );
+    }
+    console.warn(
+      `[github] ${url} attempt ${attempt}/${MAX_ATTEMPTS} ${detail}, retry in ${Math.round(wait)}ms`,
+    );
+    await sleep(wait);
+  }
+  throw new Error(`GitHub API network failure: ${url}`, { cause: lastError });
+}
+
 // In-memory cache: in `astro dev` the frontmatter re-runs on every page
 // request, so without this each reload would pay a full API round-trip.
 // Refreshed at most once per hour. The in-flight promise is shared too,
@@ -34,14 +131,7 @@ export async function getRepoMeta(): Promise<RepoMeta> {
 }
 
 async function fetchRepoMeta(): Promise<RepoMeta> {
-  const res = await fetch(API, {
-    headers: {
-      Accept: "application/vnd.github+json",
-      "User-Agent": "lmc-site-build",
-    },
-    signal: AbortSignal.timeout(10000),
-  });
-  if (!res.ok) throw new Error(`GitHub API ${res.status}: ${API}`);
+  const res = await fetchGitHubApi(API);
   const data: unknown = await res.json();
   const stars =
     typeof data === "object" &&
@@ -129,15 +219,8 @@ async function fetchReleaseInfo(tagOrLatest: string): Promise<ReleaseInfo> {
   const url =
     tagOrLatest === "latest"
       ? `${API}/releases/latest`
-      : `${API}/releases/tags/${tagOrLatest}`;
-  const res = await fetch(url, {
-    headers: {
-      Accept: "application/vnd.github+json",
-      "User-Agent": "lmc-site-build",
-    },
-    signal: AbortSignal.timeout(10000),
-  });
-  if (!res.ok) throw new Error(`GitHub API ${res.status}: ${url}`);
+      : `${API}/releases/tags/${encodeURIComponent(tagOrLatest)}`;
+  const res = await fetchGitHubApi(url);
   const data: unknown = await res.json();
   if (typeof data !== "object" || data === null)
     throw new Error(`GitHub API: unexpected release payload`);
